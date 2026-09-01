@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prosper Personal Loans — powered by FloStack</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink: #1E3743;
+    --paper: #FBF7F4;
+    --paper-2: #F3EAE1;
+    --card: #FFFFFF;
+    --gold: #FDE7D5;
+    --terracotta: #FDC89C;
+    --terracotta-2: #B96A2E;
+    --navy: #1E3743;
+    --navy-dark: #12242D;
+    --sage: #6B7A80;
+    --accent-green: #2F9E63;
+    --accent-green-d: #1E6E43;
+    --line: rgba(30,55,67,0.12);
+    --line-strong: rgba(30,55,67,0.24);
+    --shadow-soft: 0 10px 24px -16px rgba(30,55,67,0.16);
+    --shadow-med: 0 18px 40px -18px rgba(30,55,67,0.22);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+  }
+  h1,h2,h3{font-family:'Urbanist',sans-serif;font-weight:700;margin:0;color:var(--ink);}
+  .script{font-family:'Urbanist',sans-serif;font-weight:700;color:var(--terracotta-2);font-size:13px;letter-spacing:0.01em;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
+
+  /* pillar tag */
+  .pillar{
+    display:none;font-size:11px;color:var(--terracotta-2);
+    background:rgba(213,99,48,0.12);border:1px solid rgba(213,99,48,0.3);
+    padding:2px 10px;border-radius:999px;margin-bottom:10px;
+  }
+  body.logic-on .pillar{display:inline-block;}
+
+  /* two-tier institutional header, matching manipal.edu structure */
+  .utilitybar{background:var(--navy);color:#fff;}
+  .utilitybar-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:9px 32px;font-size:12px;}
+  .utilitybar-inner span:last-child{color:rgba(255,255,255,0.75);}
+
+  .sitebar{background:var(--paper-2);border-bottom:1px solid var(--line);}
+  .sitebar-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px 32px;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand .mark{width:42px;height:42px;border-radius:50%;background:var(--navy);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-family:'Urbanist',sans-serif;font-weight:900;font-size:14px;flex-shrink:0;}
+  .brand .name{font-family:'Urbanist',sans-serif;font-weight:700;font-size:18px;color:var(--ink);}
+  .brand .sub{font-size:12.5px;color:var(--sage);}
+
+  .assistant-badge{display:flex;align-items:center;gap:10px;background:var(--card);
+    border:1px solid var(--line);border-radius:999px;padding:6px 16px 6px 6px;}
+  .assistant-badge .ai-icon{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .assistant-badge .text{display:flex;flex-direction:column;line-height:1.3;}
+  .assistant-badge .title{font-size:12.5px;font-weight:700;color:var(--ink);}
+  .assistant-badge .personalize{font-size:11px;color:var(--sage);}
+  .name-inline{border:none;border-bottom:1.5px solid var(--line-strong);background:transparent;
+    font-family:'Urbanist',sans-serif;font-weight:700;font-size:11px;color:var(--ink);width:64px;padding:0 2px;}
+  .name-inline:focus{outline:none;border-color:var(--terracotta);}
+
+  .subbar{padding:18px 0 0;}
+  .controlsrow{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;}
+  .cursive-q{font-family:'Urbanist',sans-serif;font-weight:700;font-size:13px;color:var(--sage);margin-bottom:8px;}
+  .stagebar{display:flex;gap:8px;flex-wrap:wrap;}
+  .stagebtn{
+    border:1px solid var(--line);background:var(--card);padding:9px 18px;font-size:14px;font-weight:700;
+    font-family:'Urbanist',sans-serif;color:var(--ink);border-radius:999px;cursor:pointer;
+    transition:background .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .12s ease;
+  }
+  .stagebtn:hover{border-color:var(--line-strong);transform:translateY(-1px);}
+  .stagebtn:active{transform:translateY(0);}
+  .stagebtn.active{background:var(--terracotta);color:var(--ink);border-color:transparent;box-shadow:var(--shadow-soft);}
+  .switch{position:relative;display:inline-flex;align-items:center;width:34px;height:20px;flex-shrink:0;}
+  .switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;}
+  .switch .track{position:absolute;inset:0;background:var(--line-strong);border-radius:999px;transition:background .2s ease;}
+  .switch .thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;
+    box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s cubic-bezier(.4,0,.2,1);}
+  .switch input:checked + .track{background:var(--navy);}
+  .switch input:checked ~ .thumb{transform:translateX(14px);}
+  .logictoggle{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--sage);cursor:pointer;user-select:none;}
+  .icon{display:inline-flex;flex-shrink:0;}
+  .icon svg{display:block;}
+
+  /* hero */
+  .hero{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--terracotta);border-radius:16px;padding:56px 48px;margin-top:26px;
+    display:grid;grid-template-columns:1.1fr 0.9fr;gap:40px;align-items:center;}
+  .badge{display:inline-flex;align-items:center;gap:8px;background:var(--paper-2);color:var(--terracotta-2);
+    font-size:13.5px;font-weight:700;padding:8px 16px;border-radius:999px;margin-bottom:22px;}
+  .hero h1{font-size:46px;line-height:1.14;letter-spacing:-0.01em;max-width:14ch;}
+  .hero p.sub{font-size:16.5px;color:var(--sage);max-width:46ch;margin-top:18px;}
+  .ctas{display:flex;align-items:center;gap:22px;margin-top:26px;flex-wrap:wrap;}
+  .fade-target{transition:opacity .22s ease;}
+  .fade-target.fading{opacity:0;}
+  .btn{font-family:'Urbanist',sans-serif;font-size:15px;font-weight:700;padding:14px 26px;border-radius:999px;
+    border:none;cursor:pointer;box-shadow:var(--shadow-soft);transition:transform .14s ease, box-shadow .18s ease, opacity .14s ease;}
+  .btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-med);}
+  .btn:active{transform:translateY(0);box-shadow:var(--shadow-soft);}
+  .btn-primary{background:var(--terracotta);color:var(--ink);}
+  .btn-primary:hover{box-shadow:0 18px 32px -14px rgba(253,200,156,0.7), var(--shadow-med);}
+  .btn-ghost-link{background:transparent;box-shadow:none;color:var(--ink);font-weight:700;padding:14px 0;}
+  .btn-ghost-link:hover{transform:none;box-shadow:none;color:var(--terracotta-2);}
+  .btn-onterracotta{background:var(--card);color:var(--terracotta-2);}
+  .urgency{font-size:13.5px;color:var(--terracotta-2);margin-top:18px;font-weight:700;}
+  .polaroids{position:relative;height:340px;}
+  .polaroid{position:absolute;background:var(--card);padding:0;border-radius:16px;box-shadow:var(--shadow-soft);width:230px;overflow:hidden;
+    transition:transform .2s ease, box-shadow .2s ease;}
+  .polaroid:hover{transform:translateY(-3px);box-shadow:var(--shadow-med);}
+  .photo{position:relative;overflow:hidden;}
+  .photo::after{
+    content:"";
+    position:absolute;inset:0;
+    background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3QgeD0iMyIgeT0iNCIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE2IiByeD0iMiIvPjxjaXJjbGUgY3g9IjguNSIgY3k9IjkuNSIgcj0iMS41Ii8+PHBhdGggZD0iTTIxIDE1bC01LTUtNCA0LTMtMy02IDYiLz48L3N2Zz4=");
+    background-repeat:no-repeat;background-position:center;background-size:34px 34px;
+    opacity:0.32;
+  }
+  .polaroid .photo{width:100%;height:200px;background:linear-gradient(135deg, var(--navy), var(--navy-dark));}
+  .polaroid .cap{font-family:'Urbanist',sans-serif;font-weight:700;font-size:12.5px;color:var(--sage);text-align:left;padding:10px 14px;}
+  .polaroid.p1{right:0;top:0;z-index:2;}
+  .polaroid.p2{left:10px;bottom:0;width:190px;z-index:1;}
+  .polaroid.p2 .photo{height:150px;background:linear-gradient(135deg, #E8874A, var(--terracotta));}
+
+  /* sections */
+  .section{padding:52px 0;}
+  .section h2{font-size:28px;margin-bottom:24px;}
+  .daygrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .daycard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px;box-shadow:var(--shadow-soft);
+    transition:transform .18s ease, box-shadow .18s ease;}
+  .daycard:hover{transform:translateY(-3px);box-shadow:var(--shadow-med);}
+  .daycard .time{font-family:'Urbanist',sans-serif;font-weight:700;font-size:13.5px;color:var(--terracotta-2);display:block;margin-bottom:8px;letter-spacing:0.02em;}
+  .daycard .txt{font-size:15px;}
+
+  .statsrow{display:flex;gap:44px;margin-top:38px;flex-wrap:wrap;}
+  .stat b{display:block;font-family:'Urbanist',sans-serif;font-size:32px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-0.01em;}
+  .stat span{font-size:13.5px;color:var(--sage);}
+
+  .quote{display:flex;gap:36px;align-items:center;flex-wrap:wrap;}
+  .quote .spark{font-family:'Urbanist',sans-serif;font-size:44px;line-height:1;color:var(--line-strong);margin-bottom:4px;}
+  .quote blockquote{margin:0;font-family:'Urbanist',sans-serif;font-style:italic;font-size:23px;line-height:1.4;max-width:34ch;}
+  .quote .byline{margin-top:14px;font-size:14px;color:var(--sage);}
+
+  .featgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .featcard{background:var(--paper-2);border-radius:14px;padding:24px;transition:transform .18s ease, box-shadow .18s ease;}
+  .featcard:hover{transform:translateY(-3px);box-shadow:var(--shadow-soft);}
+  .featcard .eyebrow{display:block;margin-bottom:10px;font-size:19px;}
+  .featcard h3{font-size:18px;margin-bottom:8px;}
+  .featcard p{font-size:14.5px;color:var(--sage);margin:0;}
+
+  /* advisor */
+  .advisorcard{background:var(--paper-2);border-radius:16px;padding:36px;display:grid;grid-template-columns:220px 1fr;gap:34px;}
+  .advisor-photo{background:var(--card);padding:0;border-radius:16px;box-shadow:var(--shadow-soft);overflow:hidden;}
+  .advisor-photo .photo{width:100%;height:220px;background:linear-gradient(135deg, var(--terracotta), #E8874A);}
+  .advisor-photo .cap{font-family:'Urbanist',sans-serif;font-weight:700;font-size:12.5px;color:var(--sage);text-align:left;padding:10px 14px;}
+  .advisor-name{font-size:16px;font-weight:700;}
+  .advisor-role{font-size:13px;color:var(--sage);margin-bottom:14px;}
+  .advisor-desc{font-size:14.5px;margin-bottom:20px;max-width:64ch;}
+  .subgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;}
+  .subcard{background:var(--card);border-radius:18px;padding:18px 20px;}
+  .subcard h4{font-family:'Urbanist',sans-serif;font-weight:700;font-size:15.5px;margin:0 0 6px;}
+  .subcard p{font-size:13.5px;color:var(--sage);margin:0;}
+  .advisor-contact{font-size:13.5px;color:var(--sage);margin-top:14px;}
+
+  /* checklist + nudge */
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  .checklistcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:30px;}
+  .cl-title{display:block;font-size:22px;margin-bottom:18px;}
+  .cl-row{display:flex;align-items:center;gap:12px;padding:9px 0;font-size:15px;}
+  .cl-dot{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);flex-shrink:0;}
+  .cl-row.done{color:var(--sage);text-decoration:line-through;}
+  .cl-row.done .cl-dot{background:var(--accent-green);border-color:var(--accent-green);position:relative;}
+  .cl-row.done .cl-dot::after{content:"\2713";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:12px;color:var(--card);text-decoration:none;}
+  .cl-row.current{font-weight:700;}
+  .cl-row.current .cl-dot{border-color:var(--terracotta);}
+  .btn-block{display:block;width:100%;text-align:center;margin-top:18px;}
+
+  .notecard{background:var(--paper-2);border-radius:16px;padding:30px;position:relative;overflow:hidden;}
+  .note-eyebrow{display:block;font-size:22px;margin-bottom:14px;}
+  .note-text{font-size:15.5px;max-width:32ch;}
+  .note-contact{font-size:13px;color:var(--sage);margin-top:16px;}
+  .note-avatar{width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-family:'Urbanist',sans-serif;font-weight:700;font-size:14px;margin-bottom:14px;}
+  .signalrow{display:flex;align-items:center;gap:10px;margin-top:16px;font-size:12.5px;color:var(--sage);}
+  select{font-family:'Urbanist',sans-serif;font-size:12.5px;border:1px solid var(--line);border-radius:8px;
+    padding:6px 10px;background:var(--card);color:var(--ink);}
+
+  /* logic panel */
+  .logicpanel{display:none;background:var(--ink);color:var(--paper);border-radius:14px;padding:26px 30px;font-size:13.5px;}
+  body.logic-on .logicpanel{display:block;}
+  .logicpanel h3{color:var(--paper);font-size:17px;margin-bottom:12px;}
+  .logicpanel .lrow{display:flex;gap:12px;padding:10px 0;border-top:1px solid rgba(245,246,248,0.15);}
+  .logicpanel .lrow:first-of-type{border-top:none;}
+  .lrow b{color:var(--gold);font-weight:700;min-width:88px;flex-shrink:0;}
+  .lrow span{color:rgba(245,246,248,0.75);}
+
+  /* final band */
+  .ctaband{background:var(--navy);color:#fff;border-radius:16px;padding:56px 40px;text-align:center;}
+  .ctaband h2{color:var(--card);font-size:32px;margin-bottom:24px;}
+  .ctaband .row{display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap;}
+  .ctaband .addr{font-size:13.5px;opacity:.85;}
+
+  footer{padding:26px 0 40px;font-size:12.5px;color:var(--sage);text-align:center;}
+
+  /* context strip */
+  .ctxstrip{background:var(--paper-2);border-radius:999px;padding:10px 20px;font-size:13px;color:var(--terracotta-2);
+    margin-top:18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .ctxstrip b{font-weight:700;}
+  .ctxstrip .chip{background:var(--card);padding:3px 10px;border-radius:999px;font-size:12px;color:var(--ink);}
+
+  /* activity chips */
+  .activity{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+  .actchip{border:1px solid var(--line);background:var(--card);padding:9px 16px;border-radius:999px;font-size:13.5px;
+    font-weight:700;cursor:pointer;color:var(--ink);display:flex;align-items:center;gap:6px;
+    transition:transform .14s ease, border-color .18s ease, background .18s ease, color .18s ease;}
+  .actchip:hover{border-color:var(--line-strong);transform:translateY(-1px);}
+  .actchip:active{transform:translateY(0);}
+  .actchip.explored{background:var(--paper-2);border-color:transparent;color:var(--terracotta-2);}
+  .actchip.explored::before{content:"\2713";}
+
+  /* voicebot */
+  .vb-line{background:var(--paper);border-radius:12px;padding:8px 12px;font-size:13px;color:var(--sage);text-align:center;margin:4px 0;}
+  .call-divider{font-size:11.5px;font-weight:700;color:var(--sage);text-align:center;text-transform:uppercase;
+    letter-spacing:0.06em;margin:6px 0;display:flex;align-items:center;justify-content:center;gap:7px;}
+  .call-divider .dot{width:6px;height:6px;border-radius:50%;background:var(--terracotta-2);
+    animation:pulse-dot 1.1s ease-in-out infinite;}
+  @keyframes pulse-dot{0%,100%{opacity:.35;transform:scale(.8);}50%{opacity:1;transform:scale(1);}}
+
+  /* chat widget */
+  .chat-fab{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;
+    border:none;border-radius:999px;padding:14px 22px;font-family:'Urbanist',sans-serif;font-size:14.5px;
+    font-weight:700;box-shadow:var(--shadow-med);cursor:pointer;z-index:50;display:flex;align-items:center;gap:8px;
+    transition:opacity .18s ease, transform .18s ease;}
+  .chat-fab:hover{transform:translateY(-2px);}
+  .chat-fab.hidden{opacity:0;transform:translateY(8px) scale(.96);pointer-events:none;}
+  .chat-panel{position:fixed;bottom:24px;right:24px;width:340px;max-width:calc(100vw - 32px);
+    background:var(--card);border-radius:20px;box-shadow:var(--shadow-med);display:flex;flex-direction:column;
+    max-height:70vh;z-index:50;overflow:hidden;
+    opacity:0;transform:translateY(16px) scale(.97);pointer-events:none;
+    transition:opacity .22s cubic-bezier(.4,0,.2,1), transform .22s cubic-bezier(.4,0,.2,1);}
+  .chat-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+  .chat-head{background:var(--navy);color:#fff;padding:14px 18px;font-weight:700;font-size:14.5px;
+    display:flex;align-items:center;justify-content:space-between;}
+  .chat-head .x{cursor:pointer;font-size:18px;line-height:1;}
+  .chat-subhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;
+    border-bottom:1px solid var(--line);font-size:12.5px;color:var(--sage);background:var(--paper);}
+  .chat-subhead button{border:1px solid var(--line-strong);background:transparent;color:var(--terracotta-2);
+    font-family:'Urbanist',sans-serif;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;}
+  .chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:200px;}
+  .msg{padding:9px 13px;border-radius:14px;font-size:13.5px;max-width:82%;line-height:1.45;
+    animation:msg-in .22s cubic-bezier(.34,1.1,.64,1);}
+  @keyframes msg-in{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .msg.bot{background:var(--paper-2);align-self:flex-start;}
+  .msg.user{background:var(--terracotta);color:var(--ink);align-self:flex-end;}
+  .chat-input-row{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);}
+  .chat-input-row input{flex:1;border:1px solid var(--line);border-radius:999px;padding:9px 14px;
+    font-family:'Urbanist',sans-serif;font-size:13.5px;background:var(--paper);color:var(--ink);}
+  .chat-input-row button{border:none;background:var(--navy);color:#fff;border-radius:999px;
+    padding:9px 16px;font-weight:700;font-size:13px;cursor:pointer;}
+  .auto-badge{display:inline-block;background:var(--gold);color:var(--terracotta-2);font-size:11.5px;font-weight:700;
+    padding:3px 10px;border-radius:999px;margin-left:8px;}
+
+  .note-toast{position:fixed;top:-120px;left:50%;transform:translateX(-50%);width:min(480px, calc(100vw - 32px));
+    background:var(--card);border-radius:18px;box-shadow:var(--shadow-med);padding:16px 20px;z-index:80;
+    transition:top .38s cubic-bezier(.34,1.2,.64,1);display:flex;gap:12px;align-items:flex-start;}
+  .note-toast.show{top:20px;}
+  .note-toast .avatar-sm{width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;
+    flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Urbanist',sans-serif;font-weight:700;font-size:13px;}
+  .note-toast .body{flex:1;}
+  .note-toast .who{font-size:12.5px;font-weight:700;color:var(--terracotta-2);margin-bottom:3px;}
+  .note-toast .txt{font-size:13.5px;line-height:1.45;}
+  .note-toast .close{cursor:pointer;color:var(--sage);font-size:16px;line-height:1;flex-shrink:0;transition:color .15s ease;}
+  .note-toast .close:hover{color:var(--terracotta-2);}
+
+  @media (max-width:760px){
+    .hero{grid-template-columns:1fr;padding:36px 24px;}
+    .polaroids{display:none;}
+    .daygrid,.featgrid,.subgrid,.twocol{grid-template-columns:1fr;}
+    .advisorcard{grid-template-columns:1fr;}
+    .hero h1{font-size:32px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="note-toast" id="noteToast">
+  <div class="avatar-sm">M</div>
+  <div class="body">
+    <div class="who">Marcus, your loan specialist</div>
+    <div class="txt" id="noteToastText"></div>
+  </div>
+  <div class="close" id="noteToastClose">&times;</div>
+</div>
+
+<div class="utilitybar">
+  <div class="wrap utilitybar-inner">
+    <span>Prosper Personal Loans · Helping people thrive since 2005</span>
+    <span>Powered by FloStack — Intelligent Front Office</span>
+  </div>
+</div>
+
+<header class="sitebar">
+  <div class="wrap sitebar-inner">
+    <div class="brand">
+      <div class="mark">P</div>
+      <div>
+        <div class="name">Prosper</div>
+        <div class="sub">Personal Loans &middot; $2K&ndash;$50K &middot; Fixed Rates</div>
+      </div>
+    </div>
+    <div class="assistant-badge">
+      <div class="ai-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L13.9 9.3L21 11L13.9 12.7L12 20L10.1 12.7L3 11L10.1 9.3L12 2Z" fill="currentColor"/></svg>
+      </div>
+      <div class="text">
+        <span class="title">Your digital loan desk</span>
+        <span class="personalize">personalized for <input class="name-inline" id="nameInput" value="Taylor" maxlength="16"></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="subbar">
+    <div class="controlsrow">
+      <div>
+        <div class="cursive-q">where are you in your journey?</div>
+        <div class="stagebar" id="stagebar">
+          <button class="stagebtn" data-stage="curious">Checking my rate</button>
+          <button class="stagebtn" data-stage="applying">Applying</button>
+          <button class="stagebtn" data-stage="accepted">Approved!</button>
+          <button class="stagebtn" data-stage="enrolling">Funded</button>
+        </div>
+      </div>
+      <label class="logictoggle"><span class="switch"><input type="checkbox" id="logicToggle"><span class="track"></span><span class="thumb"></span></span>show FloStack logic</label>
+    </div>
+    <div class="ctxstrip" id="ctxStrip"></div>
+  </div>
+
+  <section class="hero">
+    <div>
+      <span class="pillar">Engage — microsite molded to journey stage</span>
+      <div id="heroFade" class="fade-target">
+        <div class="badge" id="heroBadge">Hi Taylor — welcome back</div>
+        <h1 id="heroHeadline">Picture the moment your loan hits your account.</h1>
+        <p class="sub" id="heroSub">You keep coming back to check your options. We get it. Here's what actually happens when you get a personal loan through Prosper — a soft credit check that won't ding your score, a fixed rate you can trust, and funds as soon as the next business day.</p>
+        <div class="ctas">
+          <button class="btn btn-primary" id="ctaPrimary">Check my rate →</button>
+          <button class="btn btn-ghost-link" id="ctaSecondary">Chat with a loan specialist</button>
+        </div>
+        <div class="urgency" id="urgencyLine">Checking your rate takes about a minute — no impact to your credit.</div>
+      </div>
+    </div>
+    <div class="polaroids">
+      <div class="polaroid p1"><div class="photo"></div><div class="cap">Checking your rate, from your phone</div></div>
+      <div class="polaroid p2"><div class="photo"></div><div class="cap">Funds landing, next business day</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="pillar">Static content — not stage-dependent</span>
+    <h2>What actually happens after you apply</h2>
+    <div class="daygrid">
+      <div class="daycard"><span class="time">2 minutes</span><div class="txt">Check your rate with a soft credit pull — it won't affect your score either way.</div></div>
+      <div class="daycard"><span class="time">Same day</span><div class="txt">Upload your ID and income verification once you accept your offer.</div></div>
+      <div class="daycard"><span class="time">1 business day</span><div class="txt">Funds land in your bank account after final approval and verification.</div></div>
+    </div>
+    <div class="statsrow">
+      <div class="stat"><b>20 years</b><span>helping people thrive</span></div>
+      <div class="stat"><b>$50K</b><span>maximum loan amount</span></div>
+      <div class="stat"><b>1 day</b><span>funding after approval</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="quote">
+      <div class="polaroid" style="position:static;width:210px;">
+        <div class="photo" style="height:150px;background:linear-gradient(135deg, var(--navy), var(--navy-dark));"></div>
+        <div class="cap">Real borrowers, real payoffs</div>
+      </div>
+      <div>
+        <div class="spark">&#8220;</div>
+        <blockquote>"I was sure checking my rate would ding my credit somehow. It didn't, and the funds were in my account the very next business day."</blockquote>
+        <div class="byline">Chloe R. · Personal Loan customer · Austin, TX</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Made for exactly where you are</h2>
+    <p style="color:var(--sage);margin:-10px 0 24px;font-size:15px;">This page rewrites itself as you move forward. No two visits look the same.</p>
+    <div class="featgrid">
+      <div class="featcard"><span class="script eyebrow">Your first step</span><h3>Checking your rate takes two minutes</h3><p>It's a soft credit pull, so looking at your options here has zero effect on your credit score.</p></div>
+      <div class="featcard"><span class="script eyebrow">What's the catch?</span><h3>Let's talk rates honestly</h3><p>Fixed rates, no prepayment penalties, and an origination fee we show you upfront — before you ever accept an offer.</p></div>
+      <div class="featcard"><span class="script eyebrow">Nationwide</span><h3>100% online, funded fast</h3><p>No branch visits. Most borrowers who accept their offer see funds land as soon as the next business day.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="pillar">Gather — behavioral signal drives the advisor's next line</span>
+    <h2>Meet Marcus — he'll be with you the whole way</h2>
+    <div class="advisorcard">
+      <div class="advisor-photo"><div class="photo"></div><div class="cap">Marcus Bell, Loan Specialist</div></div>
+      <div>
+        <div class="advisor-name">Marcus Bell</div>
+        <div class="advisor-role">Loan specialist · Personal Loans · Prosper</div>
+        <p class="advisor-desc">Marcus has helped borrowers understand their options for years, from a first rate check through their final payoff. He knows the fine print cold, so he can actually explain it in plain English. He answers his own messages, usually within a day.</p>
+        <div class="subgrid">
+          <div class="subcard"><h4>Sorting out your rate</h4><p>He'll walk through what shapes your rate and what you can actually do about it.</p></div>
+          <div class="subcard"><h4>Costs, honestly</h4><p>APR, origination fee, and total repayment — no fine-print surprises.</p></div>
+          <div class="subcard"><h4>Your application</h4><p>Document checklist, verification steps, and nudges when you go quiet.</p></div>
+          <div class="subcard"><h4>Life logistics</h4><p>How repayment actually works, autopay, and paying it off early.</p></div>
+        </div>
+        <button class="btn btn-primary">Schedule a call</button>
+        <div class="advisor-contact">marcus.bell@myfinflo.io · (800) 555-0134</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="pillar">Gather — real clicks and conversation feed the same context engine</span>
+    <h2>Explore, and watch the assistant learn</h2>
+    <p style="color:var(--sage);margin:-10px 0 20px;font-size:15px;">Click around like you actually would — every topic you explore updates your context below, the same way a real visit would. You can also chat or request a call from the assistant panel in the corner.</p>
+    <div class="activity" id="activityRow">
+      <button class="actchip" data-topic="rate">Rate & credit check</button>
+      <button class="actchip" data-topic="fees">Fees & loan amount</button>
+      <button class="actchip" data-topic="funding">Funding speed</button>
+      <button class="actchip" data-topic="eligibility">Eligibility</button>
+      <button class="actchip" data-topic="repayment">Repayment terms</button>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="pillar">Centralise — checklist state passed to the CRM record</span>
+    <div class="twocol">
+      <div class="checklistcard">
+        <span class="script cl-title">Your checklist</span>
+        <div id="checklistFade" class="fade-target">
+          <div id="checklist"></div>
+        </div>
+        <button class="btn btn-primary btn-block" id="checklistCta">Check my rate</button>
+      </div>
+      <div class="notecard">
+        <div class="note-avatar">M</div>
+        <span class="script note-eyebrow">A note from Marcus</span>
+        <p class="note-text" id="advisorNudge"></p>
+        <div class="note-contact">Marcus Bell · your loan specialist · (800) 555-0134</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section logicpanel" id="logicPanel">
+    <h3>What's actually driving this page</h3>
+    <div class="lrow"><b>Engage</b><span>The stage switcher stands in for FloStack's rule engine — in production it reads explicit signals (form answers, application status from the CRM) and re-renders headline, CTA, and urgency copy per stage. Here, the chatbot and voicebot can also trigger it directly when they detect intent.</span></div>
+    <div class="lrow"><b>Gather</b><span>The activity chips, chatbot, and voicebot all write into the same context object in real time — topics discussed, pages explored, stage signals. Nothing here is a dropdown standing in for behavior; clicking and chatting are the behavior.</span></div>
+    <div class="lrow"><b>Centralise</b><span>The checklist and context strip aren't just UI — they're the same record a rep would see in the CRM, so a human conversation starts from where the microsite and bots left off instead of from zero.</span></div>
+    <div class="lrow"><b>Insight</b><span>Not shown here: a funnel view of stage-to-stage conversion across every applicant, benchmarked against industry melt rates — that's the ROI case for the customer.</span></div>
+  </section>
+
+  <section class="section">
+    <div class="ctaband">
+      <h2 id="bandHeadline">We'd love to have you thrive, Taylor.</h2>
+      <div class="row">
+        <button class="btn btn-onterracotta">Check my rate</button>
+        <span class="addr">San Francisco, CA · NMLS #111473 · Equal Housing Lender</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>demo microsite for FloStack — Intelligent Front Office</footer>
+
+</div>
+
+<button class="chat-fab" id="chatFab">
+  <span class="icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C6.48 3 2 6.94 2 11.8C2 14.4 3.36 16.73 5.5 18.28V22L9.3 19.86C10.15 20.05 11.06 20.15 12 20.15C17.52 20.15 22 16.2 22 11.35C22 6.5 17.52 3 12 3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+  <span id="chatFabLabel">Chat with your loan assistant</span>
+</button>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-head">
+    <span>Prosper loan assistant</span>
+    <span class="x" id="chatClose">&times;</span>
+  </div>
+  <div class="chat-subhead">
+    <span>Prefer to talk it through?</span>
+    <button id="callRequestBtn">
+      <span class="icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 10.8C8.1 13.7 10.3 15.9 13.2 17.4L15.4 15.2C15.7 14.9 16.1 14.8 16.5 14.9C17.7 15.3 19 15.5 20.3 15.5C20.9 15.5 21.4 16 21.4 16.6V20.3C21.4 20.9 20.9 21.4 20.3 21.4C10.8 21.4 3 13.6 3 4.1C3 3.5 3.5 3 4.1 3H7.8C8.4 3 8.9 3.5 8.9 4.1C8.9 5.4 9.1 6.7 9.5 7.9C9.6 8.3 9.5 8.7 9.2 9L6.6 10.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+      Talk to voice assistant
+    </button>
+  </div>
+  <div class="chat-msgs" id="chatMsgs"></div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Ask about rate, fees, funding speed…">
+    <button id="chatSend">Send</button>
+  </div>
+</div>
+
+<script>
+  const stages = {
+    curious: {
+      badge: "Hi {name} — welcome back",
+      headline: "Picture the moment your loan hits your account.",
+      sub: "You keep coming back to check your options. We get it. Here's what actually happens when you get a personal loan through Prosper — a soft credit check that won't ding your score, a fixed rate you can trust, and funds as soon as the next business day.",
+      primary: "Check my rate →",
+      secondary: "Chat with a loan specialist",
+      urgency: "Checking your rate takes about a minute — no impact to your credit.",
+      checklist: [
+        {label:"Found personal loans", state:"done"},
+        {label:"Check your rate", state:"current"},
+        {label:"Compare loan terms", state:"todo"},
+        {label:"Start your application", state:"todo"},
+      ]
+    },
+    applying: {
+      badge: "Hi {name} — let's keep going",
+      headline: "You've started. Let's not let paperwork slow you down.",
+      sub: "Marcus has already pulled your rate. The fastest path from here is uploading your ID and income verification this week.",
+      primary: "Continue my application →",
+      secondary: "Ask Marcus a question",
+      urgency: "Your application is 60% complete — offers are typically ready within a day.",
+      checklist: [
+        {label:"Found personal loans", state:"done"},
+        {label:"Check your rate", state:"done"},
+        {label:"Compare loan terms", state:"done"},
+        {label:"Start your application", state:"current"},
+      ]
+    },
+    accepted: {
+      badge: "Hi {name} — you're approved",
+      headline: "You're approved. Let's get your funds moving.",
+      sub: "Funding day feels far off, but it's closer than you think. Here's what to sort out before your money arrives.",
+      primary: "Review my offer →",
+      secondary: "See what happens next",
+      urgency: "Accept your offer within 7 days to lock in your rate.",
+      checklist: [
+        {label:"Start your application", state:"done"},
+        {label:"Get approved", state:"done"},
+        {label:"Accept your loan offer", state:"current"},
+        {label:"Verify your identity", state:"todo"},
+      ]
+    },
+    enrolling: {
+      badge: "Hi {name} — almost there",
+      headline: "Your funds are on the way.",
+      sub: "Identity verification, bank details, your first payment date — the logistics that turn 'approved' into 'funded.' Marcus is your one point of contact for all of it.",
+      primary: "Finish funding steps →",
+      secondary: "Talk to support",
+      urgency: "Funds typically arrive within 1 business day of final verification.",
+      checklist: [
+        {label:"Accept your loan offer", state:"done"},
+        {label:"Verify your identity", state:"done"},
+        {label:"Funds deposited", state:"current"},
+        {label:"Set up autopay", state:"todo"},
+      ]
+    }
+  };
+
+  const STAGE_ORDER = ['curious','applying','accepted','enrolling'];
+  const STAGE_LABEL = {curious:'checking your rate', applying:'applying', accepted:'approved', enrolling:'funded'};
+
+  const KB = {
+    fees: "Personal loans range from $2,000 to $50,000, with fixed rates and no prepayment penalties. Some loans carry an origination fee, deducted from your funded amount — we'll show you the exact number before you accept.",
+    funding: "Most borrowers get funds as soon as the next business day after accepting their offer and completing verification — it also depends on how fast your bank processes the transfer.",
+    repayment: "Loan terms now run up to 6 years with fixed monthly payments. You can set up autopay, and there's no penalty for paying it off early.",
+    rate: "Checking your rate takes about a minute and uses a soft credit pull, so it won't affect your credit score. Rates are fixed for the life of the loan.",
+    eligibility: "Eligibility depends on your credit history, income, and existing monthly expenses. There's no single cutoff score — borrowers across a wide credit range get approved."
+  };
+
+  const TOPIC_LABEL = {fees:'Fees & loan amount', funding:'Funding speed', repayment:'Repayment terms', rate:'Rate & credit check', eligibility:'Eligibility'};
+
+  let ctx = {
+    name: "Taylor",
+    stage: "curious",
+    topics: new Set(),
+    autoNote: null,
+  };
+
+  function advanceStage(target){
+    const cur = STAGE_ORDER.indexOf(ctx.stage);
+    const tgt = STAGE_ORDER.indexOf(target);
+    if(tgt > cur){
+      ctx.stage = target;
+      return true;
+    }
+    return false;
+  }
+
+  function detectIntent(text){
+    const t = text.toLowerCase();
+    if(/i'?m approved|got approved|offer accepted|approved (my|the) (loan|offer)/.test(t)) return 'selected';
+    if(/funded|money (is|was) in|received (the |my )?funds|funds (arrived|deposited|were deposited)/.test(t)) return 'enrolling';
+    if(/\brate\b|apr|interest rate|soft pull|check my credit/.test(t)) return 'rate';
+    if(/fee|origination|loan amount|how much can i borrow/.test(t)) return 'fees';
+    if(/fund|how (fast|soon)|disburse|when (do|will) i get my money/.test(t)) return 'funding';
+    if(/qualify|eligib|requirement|minimum credit|credit score/.test(t)) return 'eligibility';
+    if(/repay|monthly payment|autopay|\bterm\b|payoff|pay .*off|early payment/.test(t)) return 'repayment';
+    if(/how do i (apply|start|get a loan)|apply|application/.test(t)) return 'apply';
+    if(/^\s*(hi|hello|hey)\b/.test(t)) return 'greeting';
+    return 'fallback';
+  }
+
+  function topicsPhrase(){
+    return [...ctx.topics].map(t=>TOPIC_LABEL[t]).join(', ');
+  }
+
+  function botReply(intent){
+    let reply = '';
+    switch(intent){
+      case 'greeting':
+        reply = ctx.topics.size
+          ? `Welcome back, ${ctx.name}. Want to pick up where we left off — ${topicsPhrase()}?`
+          : `Hi ${ctx.name}, I'm your virtual loan assistant for Prosper. Ask me about your rate, fees, funding speed, eligibility, or repayment terms.`;
+        break;
+      case 'rate':
+        reply = KB.rate + (ctx.topics.has('eligibility') ? " Since you've already asked about eligibility, I can give you a more specific estimate." : " Want me to check your eligibility too?");
+        ctx.topics.add('rate');
+        break;
+      case 'fees':
+        reply = KB.fees;
+        ctx.topics.add('fees');
+        break;
+      case 'funding':
+        reply = KB.funding;
+        ctx.topics.add('funding');
+        break;
+      case 'eligibility':
+        reply = KB.eligibility;
+        ctx.topics.add('eligibility');
+        break;
+      case 'repayment':
+        reply = KB.repayment;
+        ctx.topics.add('repayment');
+        break;
+      case 'apply': {
+        const moved = advanceStage('applying');
+        reply = "Great — you'll need a government ID and proof of income to get started." + (moved ? " I've gone ahead and moved your homepage to the application stage, so your checklist reflects this now." : "");
+        ctx.topics.add('apply');
+        break;
+      }
+      case 'selected': {
+        const moved = advanceStage('accepted');
+        reply = "Congratulations! That's a big moment." + (moved ? " I've updated your homepage — you should see the offer-acceptance checklist now." : " Let me know if you need help reviewing your offer.");
+        break;
+      }
+      case 'enrolling': {
+        const moved = advanceStage('enrolling');
+        reply = "Great news! Let's get your verification and repayment setup sorted." + (moved ? " I've moved your homepage to the final stage before funding." : "");
+        break;
+      }
+      default:
+        reply = "I'm not totally sure I caught that — try asking about your rate, fees, funding speed, eligibility, or repayment terms.";
+    }
+    return reply;
+  }
+
+  function stageLabelFor(s){ return STAGE_LABEL[s]; }
+
+  function renderContextStrip(){
+    const el = document.getElementById('ctxStrip');
+    el.innerHTML = '';
+    const label = document.createElement('span');
+    label.innerHTML = '<b>Your assistant knows:</b>';
+    el.appendChild(label);
+    if(ctx.topics.size === 0){
+      const span = document.createElement('span');
+      span.className = 'chip';
+      span.textContent = 'still learning about you';
+      el.appendChild(span);
+    } else {
+      ctx.topics.forEach(t=>{
+        const span = document.createElement('span');
+        span.className = 'chip';
+        span.textContent = TOPIC_LABEL[t];
+        el.appendChild(span);
+      });
+    }
+    const stageChip = document.createElement('span');
+    stageChip.className = 'chip';
+    stageChip.textContent = 'stage: ' + stageLabelFor(ctx.stage);
+    el.appendChild(stageChip);
+  }
+
+  function latestNudge(){
+    if(ctx.topics.has('rate')) return "Since you're exploring your rate, want me to check what you'd qualify for right now?";
+    if(ctx.topics.has('funding')) return "I noticed you're exploring funding speed — most borrowers see funds the next business day after accepting. Want the timeline?";
+    if(ctx.topics.has('repayment')) return "Since you checked repayment terms, want a look at what your monthly payment would actually look like?";
+    if(ctx.topics.has('fees')) return "Since you're looking at fees, happy to walk through the origination fee and exact loan amount — no fine print.";
+    return "Hey — anything I can help clarify while you look around?";
+  }
+
+  let lastRenderedStage = null;
+  function applyStageContent(s){
+    document.getElementById('heroBadge').textContent = s.badge.replace('{name}', ctx.name);
+    document.getElementById('heroHeadline').textContent = s.headline;
+    document.getElementById('heroSub').textContent = s.sub;
+    document.getElementById('ctaPrimary').textContent = s.primary;
+    document.getElementById('ctaSecondary').textContent = s.secondary;
+    document.getElementById('urgencyLine').textContent = s.urgency;
+
+    const cl = document.getElementById('checklist');
+    cl.innerHTML = '';
+    s.checklist.forEach(item=>{
+      const row = document.createElement('div');
+      row.className = 'cl-row ' + item.state;
+      row.innerHTML = '<div class="cl-dot"></div><div>' + item.label + '</div>';
+      cl.appendChild(row);
+    });
+  }
+
+  function render(){
+    const s = stages[ctx.stage];
+    const heroFade = document.getElementById('heroFade');
+    const checklistCard = document.getElementById('checklistFade');
+    if(lastRenderedStage !== null && lastRenderedStage !== ctx.stage){
+      heroFade.classList.add('fading');
+      checklistCard.classList.add('fading');
+      setTimeout(()=>{
+        applyStageContent(s);
+        heroFade.classList.remove('fading');
+        checklistCard.classList.remove('fading');
+      }, 200);
+    } else {
+      applyStageContent(s);
+    }
+    lastRenderedStage = ctx.stage;
+    document.getElementById('bandHeadline').textContent = "We'd love to have you, " + ctx.name + ".";
+
+    document.querySelectorAll('.stagebtn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.stage === ctx.stage);
+    });
+
+    document.getElementById('advisorNudge').textContent = latestNudge();
+    renderContextStrip();
+
+    document.querySelectorAll('.actchip').forEach(chip=>{
+      chip.classList.toggle('explored', ctx.topics.has(chip.dataset.topic));
+    });
+  }
+
+  document.getElementById('stagebar').addEventListener('click', e=>{
+    const btn = e.target.closest('.stagebtn');
+    if(!btn) return;
+    ctx.stage = btn.dataset.stage;
+    render();
+  });
+
+  document.getElementById('logicToggle').addEventListener('change', e=>{
+    document.body.classList.toggle('logic-on', e.target.checked);
+  });
+
+  document.getElementById('nameInput').addEventListener('input', e=>{
+    ctx.name = e.target.value.trim() || 'you';
+    render();
+  });
+
+  const secondaryCtaMessages = {
+    curious: "Connecting you with a loan specialist... While you wait: \"Checking your rate genuinely doesn't affect your score — it's a soft pull.\" — Marcus, loan specialist.",
+    applying: "I've flagged your question for Marcus. In the meantime, is it about your rate, documents, or application status?",
+    accepted: "Here's what's next: review your offer details, verify your identity, and accept before your rate lock expires.",
+    enrolling: "Connecting you with support — they can confirm your funding timeline and first payment date once verification is complete."
+  };
+  document.getElementById('ctaSecondary').addEventListener('click', ()=>{
+    openChat();
+    setTimeout(()=> pushChatMessage('bot', secondaryCtaMessages[ctx.stage]), 350);
+  });
+
+  let toastTimer = null;
+  function showNoteToast(text){
+    const toast = document.getElementById('noteToast');
+    document.getElementById('noteToastText').textContent = text;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> toast.classList.remove('show'), 6000);
+  }
+  document.getElementById('noteToastClose').addEventListener('click', ()=>{
+    document.getElementById('noteToast').classList.remove('show');
+    clearTimeout(toastTimer);
+  });
+
+  // activity chips
+  document.getElementById('activityRow').addEventListener('click', e=>{
+    const chip = e.target.closest('.actchip');
+    if(!chip) return;
+    const topic = chip.dataset.topic;
+    const isNew = !ctx.topics.has(topic);
+    ctx.topics.add(topic);
+    render();
+    pushChatMessage('bot', `Noticed you explored ${TOPIC_LABEL[topic]} — ${KB[topic]}`);
+    if(isNew) showNoteToast(latestNudge());
+  });
+
+  // chat widget
+  const chatFab = document.getElementById('chatFab');
+  const chatPanel = document.getElementById('chatPanel');
+  const chatMsgs = document.getElementById('chatMsgs');
+  const chatInput = document.getElementById('chatInput');
+
+  function pushChatMessage(role, text){
+    const div = document.createElement('div');
+    div.className = 'msg ' + role;
+    div.textContent = text;
+    chatMsgs.appendChild(div);
+    chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    if(!chatPanel.classList.contains('open')){
+      document.getElementById('chatFabLabel').textContent = 'New message from your assistant';
+    }
+  }
+
+  function openChat(){
+    chatPanel.classList.add('open');
+    chatFab.classList.add('hidden');
+    if(chatMsgs.children.length === 0){
+      pushChatMessage('bot', botReply('greeting'));
+    }
+  }
+  chatFab.addEventListener('click', openChat);
+  document.getElementById('chatClose').addEventListener('click', ()=>{
+    chatPanel.classList.remove('open');
+    chatFab.classList.remove('hidden');
+    document.getElementById('chatFabLabel').textContent = 'Chat with your loan assistant';
+  });
+
+  function sendChat(){
+    const text = chatInput.value.trim();
+    if(!text) return;
+    pushChatMessage('user', text);
+    chatInput.value = '';
+    const intent = detectIntent(text);
+    const stageBefore = ctx.stage;
+    const topicsBefore = ctx.topics.size;
+    const reply = botReply(intent);
+    setTimeout(()=>{
+      pushChatMessage('bot', reply);
+      render();
+      if(ctx.stage !== stageBefore){
+        pushChatMessage('bot', `(homepage auto-updated to "${stageLabelFor(ctx.stage)}" based on this conversation)`);
+      }
+      if(ctx.topics.size > topicsBefore){
+        showNoteToast(latestNudge());
+      }
+    }, 450);
+  }
+  document.getElementById('chatSend').addEventListener('click', sendChat);
+  chatInput.addEventListener('keydown', e=>{ if(e.key === 'Enter') sendChat(); });
+
+  // voicebot
+  function buildVoiceTranscript(){
+    const lines = [];
+    lines.push(`Hi ${ctx.name}, you're connected to your Prosper voice assistant.`);
+    if(ctx.topics.has('fees')) lines.push("I see you already checked our fee info online — happy to go deeper on the exact origination fee if that helps.");
+    if(ctx.topics.has('funding')) lines.push("You also looked into funding speed — most borrowers see funds land the next business day after accepting.");
+    if(ctx.topics.has('rate')) lines.push("Since you're exploring your rate, I can check what you'd qualify for right now.");
+    if(ctx.stage === 'applying') lines.push("Since you're mid-application, do you need help with your document checklist?");
+    if(ctx.stage === 'accepted') lines.push("Congratulations again on getting approved — want me to walk through your offer details?");
+    if(ctx.stage === 'enrolling') lines.push("Since you're almost there, let's lock in your verification and first payment date.");
+    if(lines.length === 1) lines.push("What would you like to know today — your rate, fees, funding speed, or repayment terms?");
+    lines.push("If I can't sort it out, just say so and I'll connect you with Marcus directly.");
+    return lines;
+  }
+
+  function pushDivider(text, pulsing){
+    const div = document.createElement('div');
+    div.className = 'call-divider';
+    if(pulsing){
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      div.appendChild(dot);
+    }
+    div.appendChild(document.createTextNode(text));
+    chatMsgs.appendChild(div);
+    chatMsgs.scrollTop = chatMsgs.scrollHeight;
+  }
+
+  document.getElementById('callRequestBtn').addEventListener('click', ()=>{
+    if(!chatPanel.classList.contains('open')) openChat();
+    pushDivider('Connecting to voice assistant…', true);
+    setTimeout(()=>{
+      pushDivider('Voice assistant connected');
+      const lines = buildVoiceTranscript();
+      lines.forEach((line, i)=>{
+        setTimeout(()=> pushChatMessage('bot', line), i * 550);
+      });
+    }, 400);
+  });
+
+  render();
+</script>
+
+</body>
+</html>
