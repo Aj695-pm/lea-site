@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tricoci University of Beauty Culture — powered by FloStack</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;900&display=swap');
+
+  :root{
+    --ink: #1F1F1F;
+    --paper: #FFFFFF;
+    --paper-2: #F5F5F5;
+    --card: #FFFFFF;
+    --gold: #EAF5D9;
+    --terracotta: #91C236;
+    --terracotta-2: #5E7D22;
+    --navy: #000000;
+    --navy-dark: #141414;
+    --sage: #6B6B6B;
+    --accent-green: #91C236;
+    --accent-green-d: #5E7D22;
+    --line: rgba(31,31,31,0.12);
+    --line-strong: rgba(31,31,31,0.24);
+    --shadow-soft: 0 10px 24px -16px rgba(31,31,31,0.16);
+    --shadow-med: 0 18px 40px -18px rgba(31,31,31,0.22);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Poppins',sans-serif;
+    line-height:1.6;
+  }
+  h1,h2,h3{font-family:'Poppins',sans-serif;font-weight:700;margin:0;color:var(--ink);}
+  .script{font-family:'Poppins',sans-serif;font-weight:700;color:var(--terracotta-2);font-size:13px;letter-spacing:0.01em;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
+
+  /* pillar tag */
+  .pillar{
+    display:none;font-size:11px;color:var(--terracotta-2);
+    background:rgba(213,99,48,0.12);border:1px solid rgba(213,99,48,0.3);
+    padding:2px 10px;border-radius:999px;margin-bottom:10px;
+  }
+  body.logic-on .pillar{display:inline-block;}
+
+  /* two-tier institutional header, matching manipal.edu structure */
+  .utilitybar{background:var(--navy);color:#fff;}
+  .utilitybar-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:9px 32px;font-size:12px;}
+  .utilitybar-inner span:last-child{color:rgba(255,255,255,0.75);}
+
+  .sitebar{background:var(--paper-2);border-bottom:1px solid var(--line);}
+  .sitebar-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px 32px;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand .mark{width:42px;height:42px;border-radius:50%;background:var(--terracotta);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:900;font-size:14px;flex-shrink:0;}
+  .brand .name{font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;color:var(--ink);}
+  .brand .sub{font-size:12.5px;color:var(--sage);}
+
+  .assistant-badge{display:flex;align-items:center;gap:10px;background:var(--card);
+    border:1px solid var(--line);border-radius:999px;padding:6px 16px 6px 6px;}
+  .assistant-badge .ai-icon{width:28px;height:28px;border-radius:50%;background:var(--terracotta);color:#fff;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .assistant-badge .text{display:flex;flex-direction:column;line-height:1.3;}
+  .assistant-badge .title{font-size:12.5px;font-weight:700;color:var(--ink);}
+  .assistant-badge .personalize{font-size:11px;color:var(--sage);}
+  .name-inline{border:none;border-bottom:1.5px solid var(--line-strong);background:transparent;
+    font-family:'Poppins',sans-serif;font-weight:700;font-size:11px;color:var(--ink);width:64px;padding:0 2px;}
+  .name-inline:focus{outline:none;border-color:var(--terracotta);}
+
+  .subbar{padding:18px 0 0;}
+  .controlsrow{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;}
+  .cursive-q{font-family:'Poppins',sans-serif;font-weight:700;font-size:13px;color:var(--sage);margin-bottom:8px;}
+  .stagebar{display:flex;gap:8px;flex-wrap:wrap;}
+  .stagebtn{
+    border:1px solid var(--line);background:var(--card);padding:9px 18px;font-size:14px;font-weight:700;
+    font-family:'Poppins',sans-serif;color:var(--ink);border-radius:999px;cursor:pointer;
+    transition:background .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .12s ease;
+  }
+  .stagebtn:hover{border-color:var(--line-strong);transform:translateY(-1px);}
+  .stagebtn:active{transform:translateY(0);}
+  .stagebtn.active{background:var(--terracotta);color:var(--card);border-color:transparent;box-shadow:var(--shadow-soft);}
+  .switch{position:relative;display:inline-flex;align-items:center;width:34px;height:20px;flex-shrink:0;}
+  .switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;}
+  .switch .track{position:absolute;inset:0;background:var(--line-strong);border-radius:999px;transition:background .2s ease;}
+  .switch .thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;
+    box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s cubic-bezier(.4,0,.2,1);}
+  .switch input:checked + .track{background:var(--terracotta);}
+  .switch input:checked ~ .thumb{transform:translateX(14px);}
+  .logictoggle{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--sage);cursor:pointer;user-select:none;}
+  .icon{display:inline-flex;flex-shrink:0;}
+  .icon svg{display:block;}
+
+  /* hero */
+  .hero{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--terracotta);border-radius:16px;padding:56px 48px;margin-top:26px;
+    display:grid;grid-template-columns:1.1fr 0.9fr;gap:40px;align-items:center;}
+  .badge{display:inline-flex;align-items:center;gap:8px;background:var(--paper-2);color:var(--terracotta-2);
+    font-size:13.5px;font-weight:700;padding:8px 16px;border-radius:999px;margin-bottom:22px;}
+  .hero h1{font-size:46px;line-height:1.14;letter-spacing:-0.01em;max-width:14ch;}
+  .hero p.sub{font-size:16.5px;color:var(--sage);max-width:46ch;margin-top:18px;}
+  .ctas{display:flex;align-items:center;gap:22px;margin-top:26px;flex-wrap:wrap;}
+  .fade-target{transition:opacity .22s ease;}
+  .fade-target.fading{opacity:0;}
+  .btn{font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;padding:14px 26px;border-radius:999px;
+    border:none;cursor:pointer;box-shadow:var(--shadow-soft);transition:transform .14s ease, box-shadow .18s ease, opacity .14s ease;}
+  .btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-med);}
+  .btn:active{transform:translateY(0);box-shadow:var(--shadow-soft);}
+  .btn-primary{background:var(--terracotta);color:var(--card);}
+  .btn-ghost-link{background:transparent;box-shadow:none;color:var(--ink);font-weight:700;padding:14px 0;}
+  .btn-ghost-link:hover{transform:none;box-shadow:none;color:var(--terracotta-2);}
+  .btn-onterracotta{background:var(--card);color:var(--terracotta-2);}
+  .urgency{font-size:13.5px;color:var(--terracotta-2);margin-top:18px;font-weight:700;}
+  .polaroids{position:relative;height:340px;}
+  .polaroid{position:absolute;background:var(--card);padding:0;border-radius:16px;box-shadow:var(--shadow-soft);width:230px;overflow:hidden;}
+  .photo{position:relative;overflow:hidden;}
+  .photo::after{
+    content:"";
+    position:absolute;inset:0;
+    background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3QgeD0iMyIgeT0iNCIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE2IiByeD0iMiIvPjxjaXJjbGUgY3g9IjguNSIgY3k9IjkuNSIgcj0iMS41Ii8+PHBhdGggZD0iTTIxIDE1bC01LTUtNCA0LTMtMy02IDYiLz48L3N2Zz4=");
+    background-repeat:no-repeat;background-position:center;background-size:34px 34px;
+    opacity:0.32;
+  }
+  .polaroid .photo{width:100%;height:200px;background:linear-gradient(135deg, var(--navy), var(--navy-dark));}
+  .polaroid .cap{font-family:'Poppins',sans-serif;font-weight:700;font-size:12.5px;color:var(--sage);text-align:left;padding:10px 14px;}
+  .polaroid.p1{right:0;top:0;z-index:2;}
+  .polaroid.p2{left:10px;bottom:0;width:190px;z-index:1;}
+  .polaroid.p2 .photo{height:150px;background:linear-gradient(135deg, #E8874A, var(--terracotta));}
+
+  /* sections */
+  .section{padding:52px 0;}
+  .section h2{font-size:28px;margin-bottom:24px;}
+  .daygrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .daycard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px;box-shadow:var(--shadow-soft);
+    transition:transform .18s ease, box-shadow .18s ease;}
+  .daycard:hover{transform:translateY(-3px);box-shadow:var(--shadow-med);}
+  .daycard .time{font-family:'Poppins',sans-serif;font-weight:700;font-size:13.5px;color:var(--terracotta-2);display:block;margin-bottom:8px;letter-spacing:0.02em;}
+  .daycard .txt{font-size:15px;}
+
+  .statsrow{display:flex;gap:44px;margin-top:38px;flex-wrap:wrap;}
+  .stat b{display:block;font-family:'Poppins',sans-serif;font-size:32px;font-weight:700;}
+  .stat span{font-size:13.5px;color:var(--sage);}
+
+  .quote{display:flex;gap:36px;align-items:center;flex-wrap:wrap;}
+  .quote .spark{font-family:'Poppins',sans-serif;font-size:44px;line-height:1;color:var(--line-strong);margin-bottom:4px;}
+  .quote blockquote{margin:0;font-family:'Poppins',sans-serif;font-style:italic;font-size:23px;line-height:1.4;max-width:34ch;}
+  .quote .byline{margin-top:14px;font-size:14px;color:var(--sage);}
+
+  .featgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .featcard{background:var(--paper-2);border-radius:14px;padding:24px;transition:transform .18s ease, box-shadow .18s ease;}
+  .featcard:hover{transform:translateY(-3px);box-shadow:var(--shadow-soft);}
+  .featcard .eyebrow{display:block;margin-bottom:10px;font-size:19px;}
+  .featcard h3{font-size:18px;margin-bottom:8px;}
+  .featcard p{font-size:14.5px;color:var(--sage);margin:0;}
+
+  /* advisor */
+  .advisorcard{background:var(--paper-2);border-radius:16px;padding:36px;display:grid;grid-template-columns:220px 1fr;gap:34px;}
+  .advisor-photo{background:var(--card);padding:0;border-radius:16px;box-shadow:var(--shadow-soft);overflow:hidden;}
+  .advisor-photo .photo{width:100%;height:220px;background:linear-gradient(135deg, var(--terracotta), #E8874A);}
+  .advisor-photo .cap{font-family:'Poppins',sans-serif;font-weight:700;font-size:12.5px;color:var(--sage);text-align:left;padding:10px 14px;}
+  .advisor-name{font-size:16px;font-weight:700;}
+  .advisor-role{font-size:13px;color:var(--sage);margin-bottom:14px;}
+  .advisor-desc{font-size:14.5px;margin-bottom:20px;max-width:64ch;}
+  .subgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;}
+  .subcard{background:var(--card);border-radius:18px;padding:18px 20px;}
+  .subcard h4{font-family:'Poppins',sans-serif;font-weight:700;font-size:15.5px;margin:0 0 6px;}
+  .subcard p{font-size:13.5px;color:var(--sage);margin:0;}
+  .advisor-contact{font-size:13.5px;color:var(--sage);margin-top:14px;}
+
+  /* checklist + nudge */
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  .checklistcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:30px;}
+  .cl-title{display:block;font-size:22px;margin-bottom:18px;}
+  .cl-row{display:flex;align-items:center;gap:12px;padding:9px 0;font-size:15px;}
+  .cl-dot{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);flex-shrink:0;}
+  .cl-row.done{color:var(--sage);text-decoration:line-through;}
+  .cl-row.done .cl-dot{background:var(--accent-green);border-color:var(--accent-green);position:relative;}
+  .cl-row.done .cl-dot::after{content:"\2713";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:12px;color:var(--card);text-decoration:none;}
+  .cl-row.current{font-weight:700;}
+  .cl-row.current .cl-dot{border-color:var(--terracotta);}
+  .btn-block{display:block;width:100%;text-align:center;margin-top:18px;}
+
+  .notecard{background:var(--paper-2);border-radius:16px;padding:30px;position:relative;overflow:hidden;}
+  .note-eyebrow{display:block;font-size:22px;margin-bottom:14px;}
+  .note-text{font-size:15.5px;max-width:32ch;}
+  .note-contact{font-size:13px;color:var(--sage);margin-top:16px;}
+  .note-avatar{width:36px;height:36px;border-radius:50%;background:var(--terracotta);color:var(--card);
+    display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;margin-bottom:14px;}
+  .signalrow{display:flex;align-items:center;gap:10px;margin-top:16px;font-size:12.5px;color:var(--sage);}
+  select{font-family:'Poppins',sans-serif;font-size:12.5px;border:1px solid var(--line);border-radius:8px;
+    padding:6px 10px;background:var(--card);color:var(--ink);}
+
+  /* logic panel */
+  .logicpanel{display:none;background:var(--ink);color:var(--paper);border-radius:14px;padding:26px 30px;font-size:13.5px;}
+  body.logic-on .logicpanel{display:block;}
+  .logicpanel h3{color:var(--paper);font-size:17px;margin-bottom:12px;}
+  .logicpanel .lrow{display:flex;gap:12px;padding:10px 0;border-top:1px solid rgba(245,246,248,0.15);}
+  .logicpanel .lrow:first-of-type{border-top:none;}
+  .lrow b{color:var(--gold);font-weight:700;min-width:88px;flex-shrink:0;}
+  .lrow span{color:rgba(245,246,248,0.75);}
+
+  /* final band */
+  .ctaband{background:var(--terracotta);color:var(--card);border-radius:16px;padding:56px 40px;text-align:center;}
+  .ctaband h2{color:var(--card);font-size:32px;margin-bottom:24px;}
+  .ctaband .row{display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap;}
+  .ctaband .addr{font-size:13.5px;opacity:.85;}
+
+  footer{padding:26px 0 40px;font-size:12.5px;color:var(--sage);text-align:center;}
+
+  /* context strip */
+  .ctxstrip{background:var(--paper-2);border-radius:999px;padding:10px 20px;font-size:13px;color:var(--terracotta-2);
+    margin-top:18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .ctxstrip b{font-weight:700;}
+  .ctxstrip .chip{background:var(--card);padding:3px 10px;border-radius:999px;font-size:12px;color:var(--ink);}
+
+  /* activity chips */
+  .activity{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+  .actchip{border:1px solid var(--line);background:var(--card);padding:9px 16px;border-radius:999px;font-size:13.5px;
+    font-weight:700;cursor:pointer;color:var(--ink);display:flex;align-items:center;gap:6px;
+    transition:transform .14s ease, border-color .18s ease, background .18s ease, color .18s ease;}
+  .actchip:hover{border-color:var(--line-strong);transform:translateY(-1px);}
+  .actchip:active{transform:translateY(0);}
+  .actchip.explored{background:var(--paper-2);border-color:transparent;color:var(--terracotta-2);}
+  .actchip.explored::before{content:"\2713";}
+
+  /* voicebot */
+  .vb-line{background:var(--paper);border-radius:12px;padding:8px 12px;font-size:13px;color:var(--sage);text-align:center;margin:4px 0;}
+  .call-divider{font-size:11.5px;font-weight:700;color:var(--sage);text-align:center;text-transform:uppercase;
+    letter-spacing:0.06em;margin:6px 0;}
+
+  /* chat widget */
+  .chat-fab{position:fixed;bottom:24px;right:24px;background:var(--terracotta);color:var(--card);
+    border:none;border-radius:999px;padding:14px 22px;font-family:'Poppins',sans-serif;font-size:14.5px;
+    font-weight:700;box-shadow:var(--shadow-med);cursor:pointer;z-index:50;display:flex;align-items:center;gap:8px;
+    transition:opacity .18s ease, transform .18s ease;}
+  .chat-fab:hover{transform:translateY(-2px);}
+  .chat-fab.hidden{opacity:0;transform:translateY(8px) scale(.96);pointer-events:none;}
+  .chat-panel{position:fixed;bottom:24px;right:24px;width:340px;max-width:calc(100vw - 32px);
+    background:var(--card);border-radius:20px;box-shadow:var(--shadow-med);display:flex;flex-direction:column;
+    max-height:70vh;z-index:50;overflow:hidden;
+    opacity:0;transform:translateY(16px) scale(.97);pointer-events:none;
+    transition:opacity .22s cubic-bezier(.4,0,.2,1), transform .22s cubic-bezier(.4,0,.2,1);}
+  .chat-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+  .chat-head{background:var(--terracotta);color:var(--card);padding:14px 18px;font-weight:700;font-size:14.5px;
+    display:flex;align-items:center;justify-content:space-between;}
+  .chat-head .x{cursor:pointer;font-size:18px;line-height:1;}
+  .chat-subhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;
+    border-bottom:1px solid var(--line);font-size:12.5px;color:var(--sage);background:var(--paper);}
+  .chat-subhead button{border:1px solid var(--line-strong);background:transparent;color:var(--terracotta-2);
+    font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;}
+  .chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:200px;}
+  .msg{padding:9px 13px;border-radius:14px;font-size:13.5px;max-width:82%;line-height:1.45;}
+  .msg.bot{background:var(--paper-2);align-self:flex-start;}
+  .msg.user{background:var(--terracotta);color:var(--card);align-self:flex-end;}
+  .chat-input-row{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);}
+  .chat-input-row input{flex:1;border:1px solid var(--line);border-radius:999px;padding:9px 14px;
+    font-family:'Poppins',sans-serif;font-size:13.5px;background:var(--paper);color:var(--ink);}
+  .chat-input-row button{border:none;background:var(--terracotta);color:var(--card);border-radius:999px;
+    padding:9px 16px;font-weight:700;font-size:13px;cursor:pointer;}
+  .auto-badge{display:inline-block;background:var(--gold);color:var(--terracotta-2);font-size:11.5px;font-weight:700;
+    padding:3px 10px;border-radius:999px;margin-left:8px;}
+
+  .note-toast{position:fixed;top:-120px;left:50%;transform:translateX(-50%);width:min(480px, calc(100vw - 32px));
+    background:var(--card);border-radius:18px;box-shadow:var(--shadow-med);padding:16px 20px;z-index:80;
+    transition:top .38s cubic-bezier(.34,1.2,.64,1);display:flex;gap:12px;align-items:flex-start;}
+  .note-toast.show{top:20px;}
+  .note-toast .avatar-sm{width:34px;height:34px;border-radius:50%;background:var(--terracotta);color:var(--card);
+    flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:13px;}
+  .note-toast .body{flex:1;}
+  .note-toast .who{font-size:12.5px;font-weight:700;color:var(--terracotta-2);margin-bottom:3px;}
+  .note-toast .txt{font-size:13.5px;line-height:1.45;}
+  .note-toast .close{cursor:pointer;color:var(--sage);font-size:16px;line-height:1;flex-shrink:0;transition:color .15s ease;}
+  .note-toast .close:hover{color:var(--terracotta-2);}
+
+  @media (max-width:760px){
+    .hero{grid-template-columns:1fr;padding:36px 24px;}
+    .polaroids{display:none;}
+    .daygrid,.featgrid,.subgrid,.twocol{grid-template-columns:1fr;}
+    .advisorcard{grid-template-columns:1fr;}
+    .hero h1{font-size:32px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="note-toast" id="noteToast">
+  <div class="avatar-sm">M</div>
+  <div class="body">
+    <div class="who">Jasmine, your admissions advisor</div>
+    <div class="txt" id="noteToastText"></div>
+  </div>
+  <div class="close" id="noteToastClose">&times;</div>
+</div>
+
+<div class="utilitybar">
+  <div class="wrap utilitybar-inner">
+    <span>Tricoci University of Beauty Culture · Classes Start September 21st</span>
+    <span>Powered by FloStack — Intelligent Front Office</span>
+  </div>
+</div>
+
+<header class="sitebar">
+  <div class="wrap sitebar-inner">
+    <div class="brand">
+      <div class="mark">TU</div>
+      <div>
+        <div class="name">Tricoci University of Beauty Culture</div>
+        <div class="sub">Cosmetology &middot; Esthetics &middot; Barber &middot; Nail Tech</div>
+      </div>
+    </div>
+    <div class="assistant-badge">
+      <div class="ai-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L13.9 9.3L21 11L13.9 12.7L12 20L10.1 12.7L3 11L10.1 9.3L12 2Z" fill="currentColor"/></svg>
+      </div>
+      <div class="text">
+        <span class="title">Your digital admission desk</span>
+        <span class="personalize">personalized for <input class="name-inline" id="nameInput" value="Jordan" maxlength="16"></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="subbar">
+    <div class="controlsrow">
+      <div>
+        <div class="cursive-q">where are you in your journey?</div>
+        <div class="stagebar" id="stagebar">
+          <button class="stagebtn" data-stage="curious">Just curious</button>
+          <button class="stagebtn" data-stage="applying">Applying</button>
+          <button class="stagebtn" data-stage="accepted">You're in!</button>
+          <button class="stagebtn" data-stage="enrolling">See you in September</button>
+        </div>
+      </div>
+      <label class="logictoggle"><span class="switch"><input type="checkbox" id="logicToggle"><span class="track"></span><span class="thumb"></span></span>show FloStack logic</label>
+    </div>
+    <div class="ctxstrip" id="ctxStrip"></div>
+  </div>
+
+  <section class="hero">
+    <div>
+      <span class="pillar">Engage — microsite molded to journey stage</span>
+      <div id="heroFade" class="fade-target">
+        <div class="badge" id="heroBadge">Hi Jordan — welcome back</div>
+        <h1 id="heroHeadline">Picture yourself behind the chair, coloring your first real client.</h1>
+        <p class="sub" id="heroSub">You keep coming back to beauty. We get it. Here's what your life could actually look like in the Cosmetology program at Tricoci — a clinic floor that becomes your classroom, instructors who've done this for real, and a state board exam you're actually ready for.</p>
+        <div class="ctas">
+          <button class="btn btn-primary" id="ctaPrimary">Send me program details →</button>
+          <button class="btn btn-ghost-link" id="ctaSecondary">Chat with a current student</button>
+        </div>
+        <div class="urgency" id="urgencyLine">Classes start September 21st — seats are filling fast.</div>
+      </div>
+    </div>
+    <div class="polaroids">
+      <div class="polaroid p1"><div class="photo"></div><div class="cap">Clinic floor, Bridgeview campus</div></div>
+      <div class="polaroid p2"><div class="photo"></div><div class="cap">Color lab, before the first guest</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="pillar">Static content — not stage-dependent</span>
+    <h2>A day that could belong to you</h2>
+    <div class="daygrid">
+      <div class="daycard"><span class="time">8:00 am</span><div class="txt">Sanitize your station and set up before the clinic floor opens to guests.</div></div>
+      <div class="daycard"><span class="time">11:00 am</span><div class="txt">Color theory lab — mixing your first formula completely from scratch.</div></div>
+      <div class="daycard"><span class="time">3:00 pm</span><div class="txt">Cutting technique practice on mannequins before you touch real hair.</div></div>
+    </div>
+    <div class="statsrow">
+      <div class="stat"><b>15,000+</b><span>graduates</span></div>
+      <div class="stat"><b>20+</b><span>years of experience</span></div>
+      <div class="stat"><b>15</b><span>campuses across IL, IN &amp; WI</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="quote">
+      <div class="polaroid" style="position:static;width:210px;">
+        <div class="photo" style="height:150px;background:linear-gradient(135deg, var(--navy), var(--navy-dark));"></div>
+        <div class="cap">Current cohort, Bridgeview campus</div>
+      </div>
+      <div>
+        <div class="spark">&#8220;</div>
+        <blockquote>"I almost second-guessed my decision to switch careers into beauty. Two years later I run my own book of clients and just picked up my first assisting shift at a salon downtown."</blockquote>
+        <div class="byline">Renee M. · Cosmetology '27 · Bridgeview, IL</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Made for exactly where you are</h2>
+    <p style="color:var(--sage);margin:-10px 0 24px;font-size:15px;">This page rewrites itself as you move forward. No two visits look the same.</p>
+    <div class="featgrid">
+      <div class="featcard"><span class="script eyebrow">Your first year</span><h3>The day you touch real hair</h3><p>Week three, you've moved off mannequins onto your first real guest on the clinic floor. Your hands shake a little. Then they don't.</p></div>
+      <div class="featcard"><span class="script eyebrow">Can I afford it?</span><h3>Let's talk tuition and FAFSA honestly</h3><p>We're a FAFSA-eligible school, and monthly payment plans are available. We'll walk the numbers with you, no pressure.</p></div>
+      <div class="featcard"><span class="script eyebrow">The Midwest</span><h3>A launchpad across three states</h3><p>With 15 campuses across Illinois, Indiana, and Wisconsin, our grads build client books close to home or wherever they land next.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="pillar">Gather — behavioral signal drives the advisor's next line</span>
+    <h2>Meet Jasmine — she'll be with you the whole way</h2>
+    <div class="advisorcard">
+      <div class="advisor-photo"><div class="photo"></div><div class="cap">Jasmine Cole, Admissions Advisor</div></div>
+      <div>
+        <div class="advisor-name">Jasmine Cole</div>
+        <div class="advisor-role">Admissions advisor · Cosmetology program · Bridgeview campus</div>
+        <p class="advisor-desc">Jasmine has guided students from "just curious" to their first day on the clinic floor for years. She started in the industry as a stylist herself, so she knows exactly how big a decision this is. She answers her own emails, usually within a day.</p>
+        <div class="subgrid">
+          <div class="subcard"><h4>Sorting out your schedule</h4><p>Day or evening classes — she'll help you find what actually fits your life right now.</p></div>
+          <div class="subcard"><h4>Fees, honestly</h4><p>FAFSA, scholarships, and monthly payment plans — no brochure math.</p></div>
+          <div class="subcard"><h4>Your enrollment</h4><p>Paperwork, start dates, and nudges when you go quiet.</p></div>
+          <div class="subcard"><h4>Life logistics</h4><p>Kit costs, clinic hours, and what a typical week actually looks like.</p></div>
+        </div>
+        <button class="btn btn-primary">Schedule a call</button>
+        <div class="advisor-contact">jasmine.cole@tricociuniversity.edu · (888) 616-9051</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="pillar">Gather — real clicks and conversation feed the same context engine</span>
+    <h2>Explore, and watch the assistant learn</h2>
+    <p style="color:var(--sage);margin:-10px 0 20px;font-size:15px;">Click around like you actually would — every topic you explore updates your context below, the same way a real visit would. You can also chat or request a call from the assistant panel in the corner.</p>
+    <div class="activity" id="activityRow">
+      <button class="actchip" data-topic="fees">Tuition & payment</button>
+      <button class="actchip" data-topic="hostel">Class schedule</button>
+      <button class="actchip" data-topic="placements">Career placement</button>
+      <button class="actchip" data-topic="scholarship">Financial aid</button>
+      <button class="actchip" data-topic="eligibility">State licensing</button>
+    </div>
+  </section>
+
+  <section class="section">
+    <span class="pillar">Centralise — checklist state passed to the CRM record</span>
+    <div class="twocol">
+      <div class="checklistcard">
+        <span class="script cl-title">Your checklist</span>
+        <div id="checklist"></div>
+        <button class="btn btn-primary btn-block" id="checklistCta">Send me program details</button>
+      </div>
+      <div class="notecard">
+        <div class="note-avatar">J</div>
+        <span class="script note-eyebrow">A note from Jasmine</span>
+        <p class="note-text" id="advisorNudge"></p>
+        <div class="note-contact">Jasmine Cole · your admissions advisor · (888) 616-9051</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section logicpanel" id="logicPanel">
+    <h3>What's actually driving this page</h3>
+    <div class="lrow"><b>Engage</b><span>The stage switcher stands in for FloStack's rule engine — in production it reads explicit signals (form answers, application status from the CRM) and re-renders headline, CTA, and urgency copy per stage. Here, the chatbot and voicebot can also trigger it directly when they detect intent.</span></div>
+    <div class="lrow"><b>Gather</b><span>The activity chips, chatbot, and voicebot all write into the same context object in real time — topics discussed, pages explored, stage signals. Nothing here is a dropdown standing in for behavior; clicking and chatting are the behavior.</span></div>
+    <div class="lrow"><b>Centralise</b><span>The checklist and context strip aren't just UI — they're the same record a rep would see in the CRM, so a human conversation starts from where the microsite and bots left off instead of from zero.</span></div>
+    <div class="lrow"><b>Insight</b><span>Not shown here: a funnel view of stage-to-stage conversion across every applicant, benchmarked against industry melt rates — that's the ROI case for the customer.</span></div>
+  </section>
+
+  <section class="section">
+    <div class="ctaband">
+      <h2 id="bandHeadline">We'd love to have you, Jordan.</h2>
+      <div class="row">
+        <button class="btn btn-onterracotta">Send me program details</button>
+        <span class="addr">Bridgeview, IL and 14 other Midwest campuses · NACCAS accredited</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>demo microsite for FloStack — Intelligent Front Office</footer>
+
+</div>
+
+<button class="chat-fab" id="chatFab">
+  <span class="icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C6.48 3 2 6.94 2 11.8C2 14.4 3.36 16.73 5.5 18.28V22L9.3 19.86C10.15 20.05 11.06 20.15 12 20.15C17.52 20.15 22 16.2 22 11.35C22 6.5 17.52 3 12 3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+  <span id="chatFabLabel">Chat with your admission assistant</span>
+</button>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-head">
+    <span>Tricoci admission assistant</span>
+    <span class="x" id="chatClose">&times;</span>
+  </div>
+  <div class="chat-subhead">
+    <span>Prefer to talk it through?</span>
+    <button id="callRequestBtn">
+      <span class="icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 10.8C8.1 13.7 10.3 15.9 13.2 17.4L15.4 15.2C15.7 14.9 16.1 14.8 16.5 14.9C17.7 15.3 19 15.5 20.3 15.5C20.9 15.5 21.4 16 21.4 16.6V20.3C21.4 20.9 20.9 21.4 20.3 21.4C10.8 21.4 3 13.6 3 4.1C3 3.5 3.5 3 4.1 3H7.8C8.4 3 8.9 3.5 8.9 4.1C8.9 5.4 9.1 6.7 9.5 7.9C9.6 8.3 9.5 8.7 9.2 9L6.6 10.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+      Talk to voice assistant
+    </button>
+  </div>
+  <div class="chat-msgs" id="chatMsgs"></div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Ask about fees, hostel, placements…">
+    <button id="chatSend">Send</button>
+  </div>
+</div>
+
+<script>
+  const stages = {
+    curious: {
+      badge: "Hi {name} — welcome back",
+      headline: "Picture yourself behind the chair, coloring your first real client.",
+      sub: "You keep coming back to beauty. We get it. Here's what your life could actually look like in the Cosmetology program at Tricoci — a clinic floor that becomes your classroom, instructors who've done this for real, and a state board exam you're actually ready for.",
+      primary: "Send me program details →",
+      secondary: "Chat with a current student",
+      urgency: "Classes start September 21st — seats are filling fast.",
+      checklist: [
+        {label:"Found the program", state:"done"},
+        {label:"Book a campus tour", state:"current"},
+        {label:"Check program start dates", state:"todo"},
+        {label:"Start your enrollment", state:"todo"},
+      ]
+    },
+    applying: {
+      badge: "Hi {name} — let's keep going",
+      headline: "You've started. Let's not let paperwork slow you down.",
+      sub: "Jasmine's already pulled your program details. The fastest path from here is completing your enrollment agreement and financial aid paperwork this week.",
+      primary: "Continue my enrollment →",
+      secondary: "Ask Jasmine a question",
+      urgency: "Your enrollment is 60% complete — priority seats close in 11 days.",
+      checklist: [
+        {label:"Found the program", state:"done"},
+        {label:"Book a campus tour", state:"done"},
+        {label:"Check program start dates", state:"done"},
+        {label:"Start your enrollment", state:"current"},
+      ]
+    },
+    accepted: {
+      badge: "Hi {name} — you're in",
+      headline: "You're in. Tricoci's been waiting for you.",
+      sub: "Your first day on the clinic floor feels far off, but it's closer than you think. Here's what to sort out before orientation.",
+      primary: "Confirm my start date →",
+      secondary: "See the orientation checklist",
+      urgency: "Kit deposit due within 7 days of enrollment.",
+      checklist: [
+        {label:"Start your enrollment", state:"done"},
+        {label:"Get enrolled", state:"done"},
+        {label:"Complete financial aid paperwork", state:"current"},
+        {label:"Purchase your student kit", state:"todo"},
+      ]
+    },
+    enrolling: {
+      badge: "Hi {name} — see you soon",
+      headline: "See you September 21st.",
+      sub: "Kit pickup, your class schedule, clinic floor orientation — the logistics that turn 'enrolled' into 'actually there.' Jasmine's your one point of contact for all of it.",
+      primary: "Finish enrollment steps →",
+      secondary: "Talk to student services",
+      urgency: "Orientation is September 15th — kit pickup closes September 12th.",
+      checklist: [
+        {label:"Complete financial aid paperwork", state:"done"},
+        {label:"Purchase your student kit", state:"current"},
+        {label:"Complete orientation forms", state:"todo"},
+        {label:"First day on the clinic floor", state:"todo"},
+      ]
+    }
+  };
+
+  const STAGE_ORDER = ['curious','applying','accepted','enrolling'];
+  const STAGE_LABEL = {curious:'just curious', applying:'applying', accepted:'accepted', enrolling:'enrolling'};
+
+  const KB = {
+    fees: "Tuition for the Cosmetology program runs about $19,500 for the full 1,500-hour curriculum. We're a FAFSA-eligible school, and monthly payment plans are available too.",
+    hostel: "Most campuses offer both day and evening class options, so you can build a schedule around work or family. Full-time students typically finish in about 12-15 months.",
+    placements: "Our grads have a strong track record with salons and spas across Illinois, Indiana, and Wisconsin — many students book their first clients right through our student clinic.",
+    scholarship: "We offer several industry scholarships plus FAFSA grants, and our financial aid team can walk you through exactly what you might qualify for.",
+    eligibility: "After graduating, you'll sit for your state cosmetology board exam. Our curriculum follows NACCAS accreditation standards, so you're prepared for licensing wherever you plan to practice."
+  };
+
+  const TOPIC_LABEL = {fees:'Tuition & payment', hostel:'Class schedule', placements:'Career placement', scholarship:'Financial aid', eligibility:'State licensing'};
+
+  let ctx = {
+    name: "Jordan",
+    stage: "curious",
+    topics: new Set(),
+    autoNote: null,
+  };
+
+  function advanceStage(target){
+    const cur = STAGE_ORDER.indexOf(ctx.stage);
+    const tgt = STAGE_ORDER.indexOf(target);
+    if(tgt > cur){
+      ctx.stage = target;
+      return true;
+    }
+    return false;
+  }
+
+  function detectIntent(text){
+    const t = text.toLowerCase();
+    if(/fee|tuition|cost|how much/.test(t)) return 'fees';
+    if(/schedule|day class|evening class|hours|flexib/.test(t)) return 'hostel';
+    if(/placement|job|salon|salary|hire|career/.test(t)) return 'placements';
+    if(/scholarship|financial aid|fafsa|loan|grant/.test(t)) return 'scholarship';
+    if(/licens|state board|board exam|certif/.test(t)) return 'eligibility';
+    if(/i'?m (enrolled|in|accepted)\b|signed (my |the )?(enrollment )?agreement|got accepted/.test(t)) return 'selected';
+    if(/orientation|first day|starting soon|kit pickup/.test(t)) return 'enrolling';
+    if(/how do i (enroll|apply|sign up|start|join)|enrollment process|admission process|apply|application/.test(t)) return 'apply';
+    if(/^\s*(hi|hello|hey)\b/.test(t)) return 'greeting';
+    return 'fallback';
+  }
+
+  function topicsPhrase(){
+    return [...ctx.topics].map(t=>TOPIC_LABEL[t]).join(', ');
+  }
+
+  function botReply(intent){
+    let reply = '';
+    switch(intent){
+      case 'greeting':
+        reply = ctx.topics.size
+          ? `Welcome back, ${ctx.name}. Want to pick up where we left off — ${topicsPhrase()}?`
+          : `Hi ${ctx.name}, I'm your virtual admission assistant for Tricoci University of Beauty Culture. Ask me about tuition, schedules, career placement, or how to enroll.`;
+        break;
+      case 'fees':
+        reply = KB.fees + (ctx.topics.has('scholarship') ? " Since you've already asked about financial aid, that could bring your effective cost down further." : " Want me to send the financial aid breakdown too?");
+        ctx.topics.add('fees');
+        break;
+      case 'hostel':
+        reply = KB.hostel;
+        ctx.topics.add('hostel');
+        break;
+      case 'placements':
+        reply = KB.placements;
+        ctx.topics.add('placements');
+        break;
+      case 'scholarship':
+        reply = KB.scholarship;
+        ctx.topics.add('scholarship');
+        break;
+      case 'eligibility':
+        reply = KB.eligibility;
+        ctx.topics.add('eligibility');
+        break;
+      case 'apply': {
+        const moved = advanceStage('applying');
+        reply = "Great — you'll need a photo ID and your enrollment agreement to get started." + (moved ? " I've gone ahead and moved your homepage to the enrollment stage, so your checklist reflects this now." : "");
+        ctx.topics.add('apply');
+        break;
+      }
+      case 'selected': {
+        const moved = advanceStage('accepted');
+        reply = "Congratulations! That's a big moment." + (moved ? " I've updated your homepage — you should see the financial aid checklist now." : " Let me know if you need help with your kit deposit.");
+        break;
+      }
+      case 'enrolling': {
+        const moved = advanceStage('enrolling');
+        reply = "Exciting! Let's get your kit and orientation sorted." + (moved ? " I've moved your homepage to the final stage before your first day." : "");
+        break;
+      }
+      default:
+        reply = "I'm not totally sure I caught that — try asking about tuition, schedules, career placement, financial aid, or how to enroll.";
+    }
+    return reply;
+  }
+
+  function stageLabelFor(s){ return STAGE_LABEL[s]; }
+
+  function renderContextStrip(){
+    const el = document.getElementById('ctxStrip');
+    el.innerHTML = '';
+    const label = document.createElement('span');
+    label.innerHTML = '<b>Your assistant knows:</b>';
+    el.appendChild(label);
+    if(ctx.topics.size === 0){
+      const span = document.createElement('span');
+      span.className = 'chip';
+      span.textContent = 'still learning about you';
+      el.appendChild(span);
+    } else {
+      ctx.topics.forEach(t=>{
+        const span = document.createElement('span');
+        span.className = 'chip';
+        span.textContent = TOPIC_LABEL[t];
+        el.appendChild(span);
+      });
+    }
+    const stageChip = document.createElement('span');
+    stageChip.className = 'chip';
+    stageChip.textContent = 'stage: ' + stageLabelFor(ctx.stage);
+    el.appendChild(stageChip);
+  }
+
+  function latestNudge(){
+    if(ctx.topics.has('scholarship')) return "Since you're exploring financial aid, want me to check what you'd qualify for through FAFSA?";
+    if(ctx.topics.has('hostel')) return "I noticed you're exploring class schedules — most students pick evening classes if they're working days. Want the schedule guide?";
+    if(ctx.topics.has('placements')) return "Since you checked career placement, want a look at which salons in your area have hired our recent grads?";
+    if(ctx.topics.has('fees')) return "Since you're looking at tuition, happy to walk through FAFSA and payment plan options — no brochure math.";
+    return "Hey — anything I can help clarify while you look around?";
+  }
+
+  let lastRenderedStage = null;
+  function applyHeroContent(s){
+    document.getElementById('heroBadge').textContent = s.badge.replace('{name}', ctx.name);
+    document.getElementById('heroHeadline').textContent = s.headline;
+    document.getElementById('heroSub').textContent = s.sub;
+    document.getElementById('ctaPrimary').textContent = s.primary;
+    document.getElementById('ctaSecondary').textContent = s.secondary;
+    document.getElementById('urgencyLine').textContent = s.urgency;
+  }
+
+  function render(){
+    const s = stages[ctx.stage];
+    const heroFade = document.getElementById('heroFade');
+    if(lastRenderedStage !== null && lastRenderedStage !== ctx.stage){
+      heroFade.classList.add('fading');
+      setTimeout(()=>{
+        applyHeroContent(s);
+        heroFade.classList.remove('fading');
+      }, 200);
+    } else {
+      applyHeroContent(s);
+    }
+    lastRenderedStage = ctx.stage;
+    document.getElementById('bandHeadline').textContent = "We'd love to have you, " + ctx.name + ".";
+
+    document.querySelectorAll('.stagebtn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.stage === ctx.stage);
+    });
+
+    const cl = document.getElementById('checklist');
+    cl.innerHTML = '';
+    s.checklist.forEach(item=>{
+      const row = document.createElement('div');
+      row.className = 'cl-row ' + item.state;
+      row.innerHTML = '<div class="cl-dot"></div><div>' + item.label + '</div>';
+      cl.appendChild(row);
+    });
+
+    document.getElementById('advisorNudge').textContent = latestNudge();
+    renderContextStrip();
+
+    document.querySelectorAll('.actchip').forEach(chip=>{
+      chip.classList.toggle('explored', ctx.topics.has(chip.dataset.topic));
+    });
+  }
+
+  document.getElementById('stagebar').addEventListener('click', e=>{
+    const btn = e.target.closest('.stagebtn');
+    if(!btn) return;
+    ctx.stage = btn.dataset.stage;
+    render();
+  });
+
+  document.getElementById('logicToggle').addEventListener('change', e=>{
+    document.body.classList.toggle('logic-on', e.target.checked);
+  });
+
+  document.getElementById('nameInput').addEventListener('input', e=>{
+    ctx.name = e.target.value.trim() || 'you';
+    render();
+  });
+
+  const secondaryCtaMessages = {
+    curious: "Connecting you with a current student ambassador... While you wait: \"Don't worry about shaky hands your first week, everyone starts there.\" — a second-year student.",
+    applying: "I've flagged your question for Jasmine. In the meantime, is it about your schedule, documents, or enrollment status?",
+    accepted: "Here's your orientation checklist: complete financial aid paperwork, purchase your kit, and submit your medical form before September 12th.",
+    enrolling: "Connecting you with student services — they can confirm your kit pickup time and clinic floor schedule once your forms are in."
+  };
+  document.getElementById('ctaSecondary').addEventListener('click', ()=>{
+    openChat();
+    setTimeout(()=> pushChatMessage('bot', secondaryCtaMessages[ctx.stage]), 350);
+  });
+
+  let toastTimer = null;
+  function showNoteToast(text){
+    const toast = document.getElementById('noteToast');
+    document.getElementById('noteToastText').textContent = text;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> toast.classList.remove('show'), 6000);
+  }
+  document.getElementById('noteToastClose').addEventListener('click', ()=>{
+    document.getElementById('noteToast').classList.remove('show');
+    clearTimeout(toastTimer);
+  });
+
+  // activity chips
+  document.getElementById('activityRow').addEventListener('click', e=>{
+    const chip = e.target.closest('.actchip');
+    if(!chip) return;
+    const topic = chip.dataset.topic;
+    const isNew = !ctx.topics.has(topic);
+    ctx.topics.add(topic);
+    render();
+    pushChatMessage('bot', `Noticed you explored ${TOPIC_LABEL[topic]} — ${KB[topic]}`);
+    if(isNew) showNoteToast(latestNudge());
+  });
+
+  // chat widget
+  const chatFab = document.getElementById('chatFab');
+  const chatPanel = document.getElementById('chatPanel');
+  const chatMsgs = document.getElementById('chatMsgs');
+  const chatInput = document.getElementById('chatInput');
+
+  function pushChatMessage(role, text){
+    const div = document.createElement('div');
+    div.className = 'msg ' + role;
+    div.textContent = text;
+    chatMsgs.appendChild(div);
+    chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    if(!chatPanel.classList.contains('open')){
+      document.getElementById('chatFabLabel').textContent = 'New message from your assistant';
+    }
+  }
+
+  function openChat(){
+    chatPanel.classList.add('open');
+    chatFab.classList.add('hidden');
+    if(chatMsgs.children.length === 0){
+      pushChatMessage('bot', botReply('greeting'));
+    }
+  }
+  chatFab.addEventListener('click', openChat);
+  document.getElementById('chatClose').addEventListener('click', ()=>{
+    chatPanel.classList.remove('open');
+    chatFab.classList.remove('hidden');
+    document.getElementById('chatFabLabel').textContent = 'Chat with your admission assistant';
+  });
+
+  function sendChat(){
+    const text = chatInput.value.trim();
+    if(!text) return;
+    pushChatMessage('user', text);
+    chatInput.value = '';
+    const intent = detectIntent(text);
+    const stageBefore = ctx.stage;
+    const topicsBefore = ctx.topics.size;
+    const reply = botReply(intent);
+    setTimeout(()=>{
+      pushChatMessage('bot', reply);
+      render();
+      if(ctx.stage !== stageBefore){
+        pushChatMessage('bot', `(homepage auto-updated to "${stageLabelFor(ctx.stage)}" based on this conversation)`);
+      }
+      if(ctx.topics.size > topicsBefore){
+        showNoteToast(latestNudge());
+      }
+    }, 450);
+  }
+  document.getElementById('chatSend').addEventListener('click', sendChat);
+  chatInput.addEventListener('keydown', e=>{ if(e.key === 'Enter') sendChat(); });
+
+  // voicebot
+  function buildVoiceTranscript(){
+    const lines = [];
+    lines.push(`Hi ${ctx.name}, you're connected to your Tricoci voice assistant.`);
+    if(ctx.topics.has('fees')) lines.push("I see you already checked our tuition info online — happy to go deeper on FAFSA and payment plans if that helps.");
+    if(ctx.topics.has('hostel')) lines.push("You also looked into class schedules — most students starting out love the evening track for flexibility.");
+    if(ctx.topics.has('scholarship')) lines.push("Since you're exploring financial aid, I can check what you'd qualify for through FAFSA right now.");
+    if(ctx.stage === 'applying') lines.push("Since you're mid-enrollment, do you need help with your document checklist?");
+    if(ctx.stage === 'accepted') lines.push("Congratulations again on enrolling — want me to confirm your kit deposit?");
+    if(ctx.stage === 'enrolling') lines.push("Since you're almost there, let's lock in your kit pickup and orientation date.");
+    if(lines.length === 1) lines.push("What would you like to know today — tuition, schedule, career placement, or how to enroll?");
+    lines.push("If I can't sort it out, just say so and I'll connect you with Jasmine directly.");
+    return lines;
+  }
+
+  function pushDivider(text){
+    const div = document.createElement('div');
+    div.className = 'call-divider';
+    div.textContent = text;
+    chatMsgs.appendChild(div);
+    chatMsgs.scrollTop = chatMsgs.scrollHeight;
+  }
+
+  document.getElementById('callRequestBtn').addEventListener('click', ()=>{
+    if(!chatPanel.classList.contains('open')) openChat();
+    pushDivider('Connecting to voice assistant…');
+    setTimeout(()=>{
+      pushDivider('Voice assistant connected');
+      const lines = buildVoiceTranscript();
+      lines.forEach((line, i)=>{
+        setTimeout(()=> pushChatMessage('bot', line), i * 550);
+      });
+    }, 400);
+  });
+
+  render();
+</script>
+
+</body>
+</html>
