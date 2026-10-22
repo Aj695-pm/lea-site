@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tricoci Admissions — Clickable Journey Prototype</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;900&display=swap');
+
+  :root{
+    --ink:#1F1F1F; --paper:#FFFFFF; --paper-2:#F5F5F5; --card:#FFFFFF;
+    --terracotta:#91C236; --terracotta-2:#5E7D22; --terracotta-tint:#EAF5D9;
+    --navy:#111111; --sage:#6B6B6B;
+    --line:rgba(31,31,31,0.12); --line-strong:rgba(31,31,31,0.24);
+    --shadow-soft:0 8px 20px -14px rgba(31,31,31,0.25);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;}
+  body{
+    background:radial-gradient(circle at 50% 20%, #2a2a2a, #0a0a0a);
+    font-family:'Poppins',sans-serif;color:var(--ink);
+    display:flex;align-items:center;justify-content:center;min-height:100vh;padding:30px 12px;
+  }
+
+  /* ---------- iPhone 16 Pro frame ---------- */
+  .device{
+    position:relative;width:402px;height:860px;background:linear-gradient(160deg,#3a3a3c,#1c1c1e 40%,#3a3a3c);
+    border-radius:62px;padding:12px;box-shadow:0 40px 80px -20px rgba(0,0,0,0.7), inset 0 0 0 2px rgba(255,255,255,0.08);
+    flex-shrink:0;
+  }
+  .device::before{ /* side buttons */
+    content:"";position:absolute;left:-3px;top:150px;width:3px;height:32px;background:#111;border-radius:2px 0 0 2px;
+    box-shadow:0 90px 0 #111, 0 150px 0 #111;
+  }
+  .device::after{
+    content:"";position:absolute;right:-3px;top:220px;width:3px;height:70px;background:#111;border-radius:0 2px 2px 0;
+  }
+  .screen{
+    position:relative;width:100%;height:100%;background:var(--paper);border-radius:50px;overflow:hidden;
+    display:flex;flex-direction:column;
+  }
+  .dynamic-island{
+    position:absolute;top:14px;left:50%;transform:translateX(-50%);width:100px;height:28px;
+    background:#000;border-radius:20px;z-index:50;
+  }
+  .statusbar{
+    height:48px;flex-shrink:0;display:flex;align-items:flex-end;justify-content:space-between;
+    padding:0 26px 6px;font-size:14px;font-weight:600;color:var(--ink);
+  }
+  .statusbar .icons{display:flex;gap:4px;align-items:center;font-size:12px;}
+
+  /* ---------- progress: visible, NOT clickable, only earned by completing steps ---------- */
+  .progress-row{display:flex;gap:6px;padding:6px 20px 12px;flex-shrink:0;}
+  .progress-seg{flex:1;height:4px;border-radius:999px;background:var(--line);overflow:hidden;}
+  .progress-seg .fill{height:100%;width:0%;background:var(--terracotta);border-radius:999px;transition:width .4s ease;}
+  .progress-seg.done .fill{width:100%;}
+  .progress-seg.current .fill{width:55%;}
+  .progress-label{padding:0 20px 10px;font-size:11px;font-weight:700;color:var(--sage);text-transform:uppercase;letter-spacing:0.04em;}
+
+  /* ---------- app content: one stage screen, scrollable ---------- */
+  .app-content{flex:1;overflow-y:auto;padding:6px 20px 16px;}
+  .stage-screen{animation:screen-in .28s cubic-bezier(.34,1.05,.64,1);}
+  @keyframes screen-in{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:translateX(0);}}
+
+  .eyebrow{font-size:11px;font-weight:700;color:var(--terracotta-2);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;}
+  .headline{font-weight:700;font-size:20px;line-height:1.3;margin-bottom:8px;}
+  .subtext{font-size:13.5px;color:var(--sage);line-height:1.5;margin-bottom:16px;}
+
+  /* video/counsellor module */
+  .video-card{position:relative;width:100%;aspect-ratio:4/3;border-radius:18px;overflow:hidden;
+    background:linear-gradient(145deg,#E8874A,var(--terracotta));margin-bottom:14px;cursor:pointer;box-shadow:var(--shadow-soft);}
+  .video-card .playbtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:56px;height:56px;
+    border-radius:50%;background:rgba(255,255,255,0.94);display:flex;align-items:center;justify-content:center;}
+  .video-card .playbtn::after{content:"";border-style:solid;border-width:9px 0 9px 15px;
+    border-color:transparent transparent transparent var(--navy);margin-left:4px;}
+  .video-card .vcaption{position:absolute;bottom:0;left:0;right:0;padding:12px 14px;
+    background:linear-gradient(0deg,rgba(0,0,0,0.65),transparent);color:#fff;}
+  .video-card .vcaption b{display:block;font-size:14px;font-weight:700;}
+  .video-card .vcaption span{font-size:11.5px;opacity:.85;}
+  .video-note{font-size:11.5px;color:var(--sage);background:var(--paper-2);border-radius:10px;padding:9px 11px;margin-bottom:16px;}
+
+  /* recommended program card */
+  .rec-card{background:var(--terracotta-tint);border:1px solid var(--terracotta);border-radius:16px;padding:16px;margin-bottom:16px;}
+  .rec-card .rname{font-weight:700;font-size:16px;margin-bottom:4px;}
+  .rec-card .rreason{font-size:12.5px;color:var(--ink);}
+
+  /* form */
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:11.5px;font-weight:700;margin-bottom:5px;color:var(--sage);}
+  .field input, .field select{width:100%;padding:12px;border:1px solid var(--line-strong);border-radius:10px;
+    font-family:'Poppins',sans-serif;font-size:16px;background:var(--paper-2);color:var(--ink);}
+  .field input:focus, .field select:focus{outline:none;border-color:var(--terracotta);}
+  .assist-note{font-size:11.5px;color:var(--terracotta-2);background:var(--terracotta-tint);border-radius:8px;padding:7px 10px;margin-bottom:14px;}
+
+  /* upload zone */
+  .upload-zone{border:2px dashed var(--line-strong);border-radius:14px;padding:20px 14px;text-align:center;
+    background:var(--paper-2);cursor:pointer;margin-bottom:12px;position:relative;overflow:hidden;}
+  .upload-zone .uicon{font-size:22px;margin-bottom:4px;}
+  .upload-zone .utext{font-size:12.5px;font-weight:600;}
+  .upload-zone input[type="file"]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;}
+  .doc-row{display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--card);border:1px solid var(--line);
+    border-radius:10px;font-size:12.5px;margin-bottom:6px;}
+  .doc-row.received{background:var(--terracotta-tint);border-color:var(--terracotta);}
+  .doc-dot{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--line-strong);flex-shrink:0;position:relative;}
+  .doc-row.received .doc-dot{background:var(--terracotta);border-color:var(--terracotta);}
+  .doc-row.received .doc-dot::after{content:"\2713";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;}
+
+  /* celebration */
+  .celebrate-card{background:linear-gradient(160deg,var(--terracotta-tint),var(--paper));border:1px solid var(--terracotta);
+    border-radius:16px;padding:20px 16px;text-align:center;margin-bottom:16px;}
+  .celebrate-card .ctitle{font-weight:700;font-size:18px;margin-bottom:6px;}
+
+  /* time slot picker */
+  .slot-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .slot-chip{border:1px solid var(--line-strong);border-radius:999px;padding:10px 14px;font-size:12.5px;font-weight:600;cursor:pointer;}
+  .slot-chip.selected{background:var(--terracotta);border-color:transparent;}
+  .confirm-note{display:none;font-size:12.5px;color:var(--terracotta-2);font-weight:600;background:var(--terracotta-tint);
+    border-radius:10px;padding:10px 12px;margin-bottom:14px;}
+  .confirm-note.show{display:block;}
+
+  /* collapsed content — the "save real estate" layer, expands in place */
+  .more-title{font-size:12px;font-weight:700;color:var(--sage);text-transform:uppercase;letter-spacing:0.04em;margin:18px 0 8px;}
+  .acc{border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden;}
+  .acc-head{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-size:13px;font-weight:600;background:var(--card);}
+  .acc-head .chev{color:var(--sage);transition:transform .18s ease;font-size:16px;}
+  .acc.open .acc-head .chev{transform:rotate(90deg);}
+  .acc-body{max-height:0;overflow:hidden;transition:max-height .25s ease;background:var(--paper-2);}
+  .acc.open .acc-body{max-height:220px;}
+  .acc-body-inner{padding:4px 14px 14px;font-size:12.5px;color:var(--ink);line-height:1.5;}
+
+  .home-cta-block{margin-bottom:16px;}
+  .action-btn{width:100%;padding:14px;font-size:14px;background:var(--navy);color:#fff;border:none;border-radius:999px;
+    font-family:'Poppins',sans-serif;font-weight:700;cursor:pointer;box-shadow:var(--shadow-soft);
+    transition:opacity .15s ease, transform .1s ease;}
+  .action-btn:active{transform:scale(.98);}
+  .action-btn:disabled{opacity:.35;cursor:not-allowed;}
+  .action-sub{text-align:center;font-size:10.5px;color:var(--sage);margin-top:6px;}
+
+  /* ---------- persistent tab bar: the actual front-desk navigation, CTA merged in ---------- */
+  .tab-bar{flex-shrink:0;display:flex;align-items:flex-end;border-top:1px solid var(--line);background:var(--paper);
+    padding:8px 10px calc(8px + env(safe-area-inset-bottom));gap:8px;}
+  .tab-btn{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px 4px;
+    background:none;border:none;cursor:pointer;color:var(--sage);}
+  .tab-btn svg{stroke:var(--sage);}
+  .tab-btn .tlabel{font-size:10px;font-weight:600;}
+  .tab-btn.active{color:var(--terracotta-2);}
+  .tab-btn.active svg{stroke:var(--terracotta-2);}
+  .tab-dot{position:absolute;top:2px;right:22%;width:7px;height:7px;border-radius:50%;background:var(--terracotta);
+    border:1.5px solid var(--paper);}
+  .tab-btn-wrap{position:relative;flex:1;}
+  .nav-cta-wrap{flex:1;}
+  .nav-cta-btn{width:100%;background:none;border:none;cursor:pointer;color:var(--terracotta-2);
+    display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px 4px;}
+  .nav-cta-btn svg{stroke:var(--terracotta-2);}
+  .nav-cta-btn .tlabel{font-size:10px;font-weight:600;}
+  .nav-cta-btn:disabled{color:var(--sage);cursor:not-allowed;}
+  .nav-cta-btn:disabled svg{stroke:var(--sage);}
+
+  /* ---------- Home tab: the front desk, stitched into one canvas ---------- */
+  .counsellor-block{margin-bottom:16px;}
+  .counsellor-block .cb-head{display:flex;gap:10px;align-items:center;margin-bottom:10px;}
+  .counsellor-block .cb-avatar{width:38px;height:38px;border-radius:50%;background:var(--navy);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
+  .counsellor-block .cb-name{font-weight:700;font-size:14px;}
+  .counsellor-block .cb-role{font-size:10.5px;color:var(--sage);}
+  .cb-video{position:relative;width:100%;aspect-ratio:21/9;border-radius:14px;overflow:hidden;cursor:pointer;
+    background:linear-gradient(145deg,#E8874A,var(--terracotta));margin-bottom:8px;}
+  .cb-video .playbtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;
+    border-radius:50%;background:rgba(255,255,255,0.94);display:flex;align-items:center;justify-content:center;}
+  .cb-video .playbtn::after{content:"";border-style:solid;border-width:7px 0 7px 12px;
+    border-color:transparent transparent transparent var(--navy);margin-left:3px;}
+  .cb-video .cb-caption{position:absolute;bottom:0;left:0;right:0;padding:9px 12px;font-size:11px;color:#fff;
+    background:linear-gradient(0deg,rgba(0,0,0,0.6),transparent);}
+  .cb-voice-btn{width:100%;border:1px solid var(--line-strong);background:var(--card);border-radius:999px;
+    padding:9px;font-size:11.5px;font-weight:700;cursor:pointer;color:var(--ink);}
+
+  .stage-block{background:var(--paper-2);border-radius:16px;padding:14px;margin-bottom:14px;}
+  .sb-title{font-weight:700;font-size:13.5px;margin-bottom:8px;}
+  .sb-body{font-size:12px;color:var(--sage);}
+  .program-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .program-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px;cursor:pointer;}
+  .pc-name{font-weight:700;font-size:12.5px;}
+  .pc-blurb{font-size:10.5px;color:var(--sage);margin-top:2px;}
+
+  .teaser-row{display:flex;gap:8px;overflow-x:auto;margin:0 -20px 14px;padding:0 20px 4px;-webkit-overflow-scrolling:touch;}
+  .teaser-row::-webkit-scrollbar{display:none;}
+  .teaser-chip{flex-shrink:0;border:1px solid var(--line-strong);background:var(--card);border-radius:999px;
+    padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  .teaser-chip.seen{background:var(--terracotta-tint);border-color:transparent;color:var(--terracotta-2);}
+
+  .output-block{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;
+    min-height:80px;transition:opacity .2s ease;}
+  .output-empty{font-size:12px;color:var(--sage);text-align:center;padding:14px 0;}
+  .output-eyebrow{font-size:10.5px;font-weight:700;color:var(--terracotta-2);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;}
+  .output-title{font-weight:700;font-size:14px;margin-bottom:6px;}
+  .output-body{font-size:12.5px;color:var(--ink);line-height:1.5;}
+
+  /* rich output types: event (BTL session), video (live experiment), community */
+  .event-card{background:var(--paper-2);border-radius:12px;padding:12px;margin-top:2px;}
+  .event-when{font-size:10.5px;font-weight:700;color:var(--terracotta-2);text-transform:uppercase;letter-spacing:0.04em;}
+  .event-title{font-weight:700;font-size:14px;margin:3px 0 4px;}
+  .event-where{font-size:11.5px;color:var(--sage);margin-bottom:8px;}
+  .event-body{font-size:12px;color:var(--ink);margin-bottom:10px;line-height:1.4;}
+  .event-rsvp{width:100%;background:var(--navy);color:#fff;border:none;border-radius:999px;padding:10px;
+    font-family:'Poppins',sans-serif;font-weight:700;font-size:12.5px;cursor:pointer;}
+  .event-rsvp.done{background:var(--terracotta);color:var(--ink);}
+  .community-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .community-avatars{display:flex;}
+  .community-avatars span{width:26px;height:26px;border-radius:50%;border:2px solid var(--card);margin-left:-8px;
+    background:linear-gradient(135deg,var(--terracotta),#E8874A);}
+  .community-avatars span:first-child{margin-left:0;background:linear-gradient(135deg,var(--navy),#333);}
+  .community-avatars span:nth-child(2){background:linear-gradient(135deg,#5b7fbd,#3a5580);}
+  .community-count{font-size:12px;font-weight:700;}
+  .social-card{border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .social-head{display:flex;align-items:center;gap:8px;padding:9px 11px;border-bottom:1px solid var(--line);}
+  .social-head .shandle{font-size:11.5px;font-weight:700;}
+  .social-head .ssource{font-size:9px;color:var(--sage);margin-left:auto;background:var(--paper-2);padding:3px 7px;border-radius:999px;}
+  .social-photo{width:100%;aspect-ratio:1.6;background:linear-gradient(135deg,#c15b8e,#8a3b60);}
+  .social-caption{padding:9px 11px;font-size:11.5px;line-height:1.4;color:var(--ink);}
+
+  /* ---------- floating chat: icon + compact popup, not embedded in the scroll flow ---------- */
+  .chat-fab{position:absolute;right:16px;bottom:76px;width:50px;height:50px;border-radius:50%;background:var(--navy);
+    color:#fff;border:none;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-med);
+    cursor:pointer;z-index:60;transition:transform .15s ease;}
+  .chat-fab:active{transform:scale(.94);}
+  .chat-fab .dot{position:absolute;top:6px;right:6px;width:9px;height:9px;border-radius:50%;background:var(--terracotta);
+    border:2px solid var(--navy);display:none;}
+  .chat-fab .dot.show{display:block;}
+  .chat-popup{position:absolute;right:14px;bottom:134px;width:290px;max-height:480px;background:var(--card);
+    border-radius:16px;box-shadow:var(--shadow-med);z-index:59;display:flex;flex-direction:column;overflow:hidden;
+    transform:translateY(12px) scale(.96);opacity:0;pointer-events:none;transition:transform .18s ease, opacity .18s ease;}
+  .chat-popup.open{transform:translateY(0) scale(1);opacity:1;pointer-events:auto;}
+  .cp-head{background:var(--navy);color:#fff;padding:10px 12px;font-size:12px;font-weight:700;
+    display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+  .cp-head .cp-close{cursor:pointer;font-size:15px;opacity:.8;}
+  .cp-call{cursor:pointer;display:flex;align-items:center;opacity:.9;}
+  .cp-msgs{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-height:320px;max-height:380px;}
+  .mc-msg{max-width:85%;padding:7px 11px;border-radius:12px;font-size:11.5px;line-height:1.4;}
+  .mc-msg.bot{background:var(--paper-2);align-self:flex-start;}
+  .mc-msg.user{background:var(--terracotta);align-self:flex-end;}
+  .cp-input-row{display:flex;gap:6px;padding:9px 10px;border-top:1px solid var(--line);flex-shrink:0;}
+  .cp-input-row input{flex:1;border:1px solid var(--line-strong);border-radius:999px;padding:8px 12px;
+    font-size:16px;font-family:'Poppins',sans-serif;background:var(--paper-2);min-width:0;}
+  .cp-input-row button{border:none;background:var(--navy);color:#fff;border-radius:999px;padding:8px 13px;
+    font-weight:700;font-size:11px;cursor:pointer;flex-shrink:0;}
+
+  .feed-item{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);}
+  .feed-item:last-child{border-bottom:none;}
+  .feed-item .ficon{width:28px;height:28px;border-radius:50%;background:var(--terracotta-tint);color:var(--terracotta-2);
+    display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+  .feed-item .ftext{font-size:12px;line-height:1.4;}
+  .feed-item .ftime{font-size:10px;color:var(--sage);margin-top:2px;}
+  .feed-empty{font-size:12px;color:var(--sage);text-align:center;padding:12px 0;}
+
+  /* ---------- Resources tab ---------- */
+  .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;}
+  .res-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 12px;cursor:pointer;}
+  .res-card .ricon{font-size:18px;margin-bottom:6px;}
+  .res-card .rtitle{font-size:12px;font-weight:700;}
+
+  /* ---------- Messages tab (was overlay, now inline) ---------- */
+  .messages-tab{display:flex;flex-direction:column;height:100%;}
+  .messages-tab .chat-msgs{flex:1;}
+
+  /* ---------- testimonial slider: swipeable, not text buried in an accordion ---------- */
+  .slider{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -20px 10px;padding:0 20px 6px;
+    -webkit-overflow-scrolling:touch;}
+  .slider::-webkit-scrollbar{display:none;}
+  .t-card{flex:0 0 82%;scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:14px;box-shadow:var(--shadow-soft);}
+  .t-card .tquote{font-size:12.5px;font-style:italic;line-height:1.5;margin-bottom:8px;}
+  .t-card .tby{display:flex;align-items:center;gap:8px;}
+  .t-card .tavatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--terracotta),#E8874A);flex-shrink:0;}
+  .t-card .tname{font-size:11.5px;font-weight:700;}
+  .t-card .trole{font-size:10.5px;color:var(--sage);}
+  .dots{display:flex;justify-content:center;gap:5px;margin:2px 0 16px;}
+  .dot{width:5px;height:5px;border-radius:50%;background:var(--line-strong);}
+  .dot.active{background:var(--terracotta);width:14px;border-radius:999px;}
+
+  /* ---------- image gallery: swipeable photo strip ---------- */
+  .gallery{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -20px 16px;padding:0 20px 4px;
+    -webkit-overflow-scrolling:touch;}
+  .gallery::-webkit-scrollbar{display:none;}
+  .g-item{flex:0 0 110px;scroll-snap-align:start;}
+  .g-photo{width:110px;height:110px;border-radius:14px;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,var(--navy),#333);}
+  .g-photo::after{content:"";position:absolute;inset:0;background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3QgeD0iMyIgeT0iNCIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE2IiByeD0iMiIvPjxjaXJjbGUgY3g9IjguNSIgY3k9IjkuNSIgcj0iMS41Ii8+PHBhdGggZD0iTTIxIDE1bC01LTUtNCA0LTMtMy02IDYiLz48L3N2Zz4=");
+    background-repeat:no-repeat;background-position:center;background-size:26px 26px;opacity:.35;}
+  .g-label{font-size:10px;color:var(--sage);margin-top:5px;text-align:center;}
+  .g-item:nth-child(2) .g-photo{background:linear-gradient(135deg,var(--terracotta),#E8874A);}
+  .g-item:nth-child(3) .g-photo{background:linear-gradient(135deg,#5b7fbd,#3a5580);}
+  .g-item:nth-child(4) .g-photo{background:linear-gradient(135deg,#c15b8e,#8a3b60);}
+
+  /* ---------- infographic stat card ---------- */
+  .infographic{display:flex;align-items:center;gap:16px;background:var(--paper-2);border-radius:16px;padding:16px;margin-bottom:16px;}
+  .stat-ring{--pct:0;width:64px;height:64px;border-radius:50%;flex-shrink:0;
+    background:conic-gradient(var(--terracotta) calc(var(--pct)*1%), var(--line) 0);
+    display:flex;align-items:center;justify-content:center;}
+  .stat-ring-inner{width:50px;height:50px;border-radius:50%;background:var(--paper-2);display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:13px;}
+  .infographic .stat-detail{flex:1;}
+  .infographic .stat-title{font-size:12.5px;font-weight:700;margin-bottom:2px;}
+  .infographic .stat-sub{font-size:11px;color:var(--sage);}
+  .stat-badges{display:flex;gap:8px;margin-bottom:16px;}
+  .stat-badge{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center;}
+  .stat-badge b{display:block;font-size:15px;font-weight:700;color:var(--terracotta-2);}
+  .stat-badge span{font-size:9.5px;color:var(--sage);}
+
+  /* video card variant for lab/program content */
+  .video-card.small{aspect-ratio:16/9;margin-bottom:12px;}
+
+  /* ---------- persistent chat: query resolution, always available via the Messages tab ---------- */
+  .chat-panel{display:flex;flex-direction:column;height:100%;}
+  .chat-head{flex-shrink:0;padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
+  .chat-head .chead-info{display:flex;align-items:center;gap:10px;}
+  .chat-head .chavatar{width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;display:flex;
+    align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+  .chat-head .cname{font-weight:700;font-size:13.5px;}
+  .chat-head .cstatus{font-size:10.5px;color:var(--terracotta-2);}
+  .chat-msgs{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:9px;}
+  .cmsg{max-width:80%;padding:9px 13px;border-radius:14px;font-size:13px;line-height:1.4;}
+  .cmsg.bot{background:var(--paper-2);align-self:flex-start;border-bottom-left-radius:4px;}
+  .cmsg.user{background:var(--terracotta);align-self:flex-end;border-bottom-right-radius:4px;}
+  .cmsg.handoff{align-self:center;background:var(--terracotta-tint);border:1px solid var(--terracotta);text-align:center;font-weight:600;color:var(--terracotta-2);}
+  .chat-quick{display:flex;gap:7px;padding:0 18px 10px;overflow-x:auto;flex-shrink:0;}
+  .qchip{flex-shrink:0;border:1px solid var(--line-strong);border-radius:999px;padding:7px 12px;font-size:11.5px;font-weight:600;background:var(--card);cursor:pointer;white-space:nowrap;}
+  .chat-input-row{flex-shrink:0;display:flex;gap:8px;padding:12px 18px 18px;border-top:1px solid var(--line);}
+  .chat-input-row input{flex:1;border:1px solid var(--line);border-radius:999px;padding:10px 14px;font-size:16px;font-family:'Poppins',sans-serif;background:var(--paper-2);}
+  .chat-input-row button{border:none;background:var(--navy);color:#fff;border-radius:999px;padding:10px 16px;font-weight:700;font-size:12.5px;cursor:pointer;}
+  .callbar{flex-shrink:0;padding:0 18px 10px;}
+  .callbtn{width:100%;border:1px solid var(--line-strong);background:var(--card);border-radius:999px;padding:9px;
+    font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+
+  /* ---------- step tracker: process visualization, distinct from ring/gallery/slider ---------- */
+  .steps-row{display:flex;align-items:flex-start;margin-bottom:18px;}
+  .step-item{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;}
+  .step-dot{width:26px;height:26px;border-radius:50%;background:var(--line);display:flex;align-items:center;
+    justify-content:center;font-size:12px;color:var(--sage);font-weight:700;z-index:1;}
+  .step-item.done .step-dot{background:var(--terracotta);color:#fff;}
+  .step-item.current .step-dot{background:var(--terracotta-2);color:#fff;box-shadow:0 0 0 4px var(--terracotta-tint);
+    animation:pulse-step 1.4s infinite;}
+  @keyframes pulse-step{0%,100%{box-shadow:0 0 0 4px var(--terracotta-tint);}50%{box-shadow:0 0 0 7px var(--terracotta-tint);}}
+  .step-line{position:absolute;top:13px;left:-50%;width:100%;height:2px;background:var(--line);z-index:0;}
+  .step-item.done .step-line{background:var(--terracotta);}
+  .step-item:first-child .step-line{display:none;}
+  .step-label{font-size:9px;color:var(--sage);text-align:center;margin-top:6px;line-height:1.3;}
+  .step-item.current .step-label{color:var(--terracotta-2);font-weight:700;}
+
+  /* single reassurance quote — lighter than a full slider, for content-heavy screens (e.g. a form) */
+  .quote-mini{display:flex;gap:10px;align-items:center;background:var(--paper-2);border-radius:14px;padding:12px 14px;margin-bottom:16px;}
+  .quote-mini .qavatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--terracotta),#E8874A);flex-shrink:0;}
+  .quote-mini .qtext{font-size:12px;font-style:italic;line-height:1.4;}
+  .quote-mini .qtext b{display:block;font-style:normal;font-weight:700;font-size:10.5px;margin-top:3px;color:var(--sage);}
+
+  /* ---------- assistant narration: makes clear the assistant is choosing to show you this, not a static page ---------- */
+  .assistant-note{display:flex;gap:10px;align-items:flex-start;background:var(--navy);color:#fff;border-radius:16px;
+    border-bottom-left-radius:4px;padding:12px 14px;margin-bottom:16px;}
+  .assistant-note .anavatar{width:26px;height:26px;border-radius:50%;background:var(--terracotta);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;}
+  .assistant-note .atext{font-size:12.5px;line-height:1.45;}
+
+  /* ---------- CRM push banner: the microsite reacting to something that happened without the student acting ---------- */
+  .crm-banner{position:absolute;top:12px;left:12px;right:12px;background:var(--navy);color:#fff;border-radius:14px;
+    padding:11px 14px;display:flex;align-items:center;gap:10px;z-index:70;box-shadow:0 12px 24px -10px rgba(0,0,0,0.4);
+    transform:translateY(-140%);transition:transform .35s cubic-bezier(.34,1.15,.64,1);}
+  .crm-banner.show{transform:translateY(0);}
+  .crm-banner .cicon{width:26px;height:26px;border-radius:50%;background:var(--terracotta);flex-shrink:0;display:flex;
+    align-items:center;justify-content:center;font-size:12px;}
+  .crm-banner .ctext{font-size:11.5px;line-height:1.35;}
+  .crm-banner .ctext b{display:block;font-size:10px;color:var(--terracotta);text-transform:uppercase;letter-spacing:0.04em;}
+
+  /* ---------- social-pull card: content that reads as sourced live, not authored into the page ---------- */
+  .social-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:16px;}
+  .social-head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);}
+  .social-head .shandle{font-size:11.5px;font-weight:700;}
+  .social-head .ssource{font-size:9.5px;color:var(--sage);margin-left:auto;background:var(--paper-2);padding:3px 8px;border-radius:999px;}
+  .social-photo{width:100%;aspect-ratio:1;background:linear-gradient(135deg,#c15b8e,#8a3b60);}
+  .social-caption{padding:10px 12px;font-size:11.5px;line-height:1.4;color:var(--ink);}
+</style>
+</head>
+<body>
+
+<div class="device">
+  <div class="screen">
+    <div class="dynamic-island"></div>
+    <div class="statusbar">
+      <span>9:41</span>
+      <span class="icons">●●● 5G 🔋</span>
+    </div>
+
+    <div class="crm-banner" id="crmBanner">
+      <div class="cicon">↻</div>
+      <div class="ctext"><b>CRM update</b><span id="crmBannerText"></span></div>
+    </div>
+
+    <div class="app-content" id="mainView"></div>
+
+    <div class="chat-popup" id="chatPopup">
+      <div class="cp-head">
+        <span>Jasmine — ask anything</span>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="cp-call" id="popupCallBtn" title="Talk to a real person">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 10.8C8.1 13.7 10.3 15.9 13.2 17.4L15.4 15.2C15.7 14.9 16.1 14.8 16.5 14.9C17.7 15.3 19 15.5 20.3 15.5C20.9 15.5 21.4 16 21.4 16.6V20.3C21.4 20.9 20.9 21.4 20.3 21.4C10.8 21.4 3 13.6 3 4.1C3 3.5 3.5 3 4.1 3H7.8C8.4 3 8.9 3.5 8.9 4.1C8.9 5.4 9.1 6.7 9.5 7.9C9.6 8.3 9.5 8.7 9.2 9L6.6 10.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="cp-close" id="chatPopupClose">&times;</span>
+        </div>
+      </div>
+      <div class="cp-msgs" id="popupMsgs"></div>
+      <div class="cp-input-row">
+        <input type="text" id="popupInput" placeholder="Ask Jasmine…">
+        <button id="popupSend">Send</button>
+      </div>
+    </div>
+    <button class="chat-fab" id="chatFab" title="Ask Jasmine">
+      <span class="dot" id="fabDot"></span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C6.48 3 2 6.94 2 11.8C2 14.4 3.36 16.73 5.5 18.28V22L9.3 19.86C10.15 20.05 11.06 20.15 12 20.15C17.52 20.15 22 16.2 22 11.35C22 6.5 17.52 3 12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    </button>
+
+    <div class="tab-bar" id="tabBar">
+      <div class="tab-btn-wrap">
+        <button class="tab-btn active" data-tab="home" onclick="switchTab('home')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 11L12 3L21 11V20C21 20.55 20.55 21 20 21H15V14H9V21H4C3.45 21 3 20.55 3 20V11Z" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          <span class="tlabel">Home</span>
+        </button>
+      </div>
+      <div class="tab-btn-wrap nav-cta-wrap">
+        <button class="nav-cta-btn" id="actionBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke-width="1.7"/><path d="M10 8L14 12L10 16" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="tlabel" id="actionLabel">Book my interview</span>
+        </button>
+      </div>
+      <div class="tab-btn-wrap">
+        <button class="tab-btn" data-tab="resources" onclick="switchTab('resources')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 19.5C4 18.12 5.12 17 6.5 17H20V21H6.5C5.12 21 4 19.88 4 18.5V19.5Z" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 3H20V17H6.5C5.12 17 4 15.88 4 14.5V5.5C4 4.12 5.12 3 6.5 3Z" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          <span class="tlabel">Resources</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STAGES = ['anonymous','interested','interview','applying','submitted','enrolled','onboarding'];
+  const STAGE_LABEL = {
+    anonymous: 'Just browsing',
+    interested: 'Interested',
+    interview: 'Interview complete',
+    applying: 'Application initiated',
+    submitted: 'Application submitted',
+    enrolled: 'Enrollment done',
+    onboarding: 'Getting you there'
+  };
+
+  let state = {
+    activeTab: 'home',
+    stageIndex: 0,
+    slotBooked: null,
+    formValid: false,
+    docsUploaded: 0,
+    calendarAdded: false,
+    studentName: null,
+    crmFeed: [],
+    crmDocPushed: false,
+    orientationConfirmed: false,
+    meltNudgeSent: false,
+    chatHistory: [],
+    unreadMessages: false
+  };
+
+  function currentStage(){ return STAGES[state.stageIndex]; }
+
+  function toggleAcc(el){
+    el.classList.toggle('open');
+  }
+
+  function accordion(id, title, body){
+    return `<div class="acc" id="${id}">
+      <div class="acc-head" onclick="toggleAcc(document.getElementById('${id}'))"><span>${title}</span><span class="chev">›</span></div>
+      <div class="acc-body"><div class="acc-body-inner">${body}</div></div>
+    </div>`;
+  }
+
+  const SCREENS = {
+    anonymous: ()=>`
+      <div class="stage-screen">
+        <div class="assistant-note"><div class="anavatar">J</div><div class="atext">Hi, I'm Jasmine — welcome! Look around, ask me anything, and whenever you're ready I'll get to know you properly.</div></div>
+        <div class="eyebrow">Just exploring</div>
+        <div class="headline">Explore Tricoci, no commitment yet.</div>
+        <div class="subtext">Browse programs, watch a walkthrough, or ask a question in Messages — whenever you're ready to talk, tap Get Started below.</div>
+
+        <div class="more-title">See the campus</div>
+        <div class="gallery">
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">Clinic floor</div></div>
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">Color lab</div></div>
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">Graduation day</div></div>
+        </div>
+
+        <div class="more-title">Program at a glance</div>
+        <div class="infographic">
+          <div class="stat-ring" style="--pct:91;"><div class="stat-ring-inner">91%</div></div>
+          <div class="stat-detail">
+            <div class="stat-title">Job placement within 6 months</div>
+            <div class="stat-sub">Across salons and spas in IL, IN & WI</div>
+          </div>
+        </div>
+
+        <div class="more-title">Questions</div>
+        ${accordion('accAnonFees','What does it cost?','Tuition runs about $19,500 for the full program — FAFSA-eligible, with payment plans available.')}
+        ${accordion('accAnonProg','What programs are offered?','Cosmetology, Esthetics, Barber, and Nail Tech — day and evening options.')}
+      </div>`,
+
+    interested: ()=>`
+      <div class="stage-screen">
+        <div class="assistant-note"><div class="anavatar">J</div><div class="atext">Hi, I'm Jasmine. Ask me anything below, or grab 15 minutes with me and I'll take it from there — either way, I've got you.</div></div>
+        <div class="eyebrow">Meet your counsellor</div>
+        <div class="video-card" onclick="playVideo(this)">
+          <div class="playbtn"></div>
+          <div class="vcaption"><b>Jasmine Cole</b><span>Your admissions counsellor · tap to play</span></div>
+        </div>
+        <div class="video-note">Placeholder for a real 20-second intro clip — "Hi, I'm Jasmine. I'll be with you through your whole admissions journey. Let's start with a quick conversation."</div>
+        <div class="headline">Ready when you are.</div>
+        <div class="subtext">Book 15 minutes with Jasmine — no forms, no pressure, just a conversation about what you're looking for.</div>
+        <div class="slot-row" id="slotRow">
+          <div class="slot-chip" onclick="pickSlot(this,'Today, 4:00 PM')">Today, 4:00 PM</div>
+          <div class="slot-chip" onclick="pickSlot(this,'Tomorrow, 10:00 AM')">Tomorrow, 10:00 AM</div>
+          <div class="slot-chip" onclick="pickSlot(this,'Tomorrow, 2:00 PM')">Tomorrow, 2:00 PM</div>
+        </div>
+        <div class="confirm-note" id="slotConfirm"></div>
+
+        <div class="more-title">What students say</div>
+        <div class="slider" id="testiSlider" onscroll="onSliderScroll(this,'testiDots')">
+          <div class="t-card"><div class="tquote">"I almost second-guessed switching careers into beauty. Two years later I run my own book of clients."</div><div class="tby"><div class="tavatar"></div><div><div class="tname">Renee M.</div><div class="trole">Cosmetology, Class of 2027</div></div></div></div>
+          <div class="t-card"><div class="tquote">"The evening track meant I could keep my day job while I trained. Jasmine helped me figure out the schedule before I even applied."</div><div class="tby"><div class="tavatar"></div><div><div class="tname">Marcus T.</div><div class="trole">Cosmetology, Class of 2026</div></div></div></div>
+          <div class="t-card"><div class="tquote">"I was nervous about the state board exam. The clinic floor hours made it feel routine by the time test day came."</div><div class="tby"><div class="tavatar"></div><div><div class="tname">Priya S.</div><div class="trole">Esthetics, Class of 2025</div></div></div></div>
+        </div>
+        <div class="dots" id="testiDots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
+
+        <div class="more-title">See the campus</div>
+        <div class="gallery">
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">Clinic floor</div></div>
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">Color lab</div></div>
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">Graduation day</div></div>
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">Bridgeview campus</div></div>
+        </div>
+
+        <div class="more-title">Trending from the community</div>
+        <div class="social-card">
+          <div class="social-head"><div class="shandle">@tricociuniversity</div><div class="ssource">pulled from Instagram</div></div>
+          <div class="social-photo"></div>
+          <div class="social-caption">"Graduation day hits different when you remember your first shaky haircut 💇‍♀️" — 412 likes, posted 2 days ago</div>
+        </div>
+
+        <div class="more-title">Program at a glance</div>
+        <div class="infographic">
+          <div class="stat-ring" style="--pct:91;"><div class="stat-ring-inner">91%</div></div>
+          <div class="stat-detail">
+            <div class="stat-title">Job placement within 6 months</div>
+            <div class="stat-sub">Across salons and spas in IL, IN & WI</div>
+          </div>
+        </div>
+        <div class="stat-badges">
+          <div class="stat-badge"><b>$19.5K</b><span>full tuition</span></div>
+          <div class="stat-badge"><b>12-15mo</b><span>typical length</span></div>
+          <div class="stat-badge"><b>15</b><span>campuses</span></div>
+        </div>
+
+        <div class="more-title">Questions</div>
+        ${accordion('accFees','Am I eligible for financial aid?','This is a FAFSA-eligible school, and monthly payment plans are available — Jasmine can walk you through what you would qualify for.')}
+        ${accordion('accProgram','What programs are offered?','Cosmetology, Esthetics, Barber, and Nail Tech — day and evening class options across 15 Midwest campuses.')}
+      </div>`,
+
+    interview: ()=>`
+      <div class="stage-screen">
+        <div class="assistant-note"><div class="anavatar">J</div><div class="atext">Great talking with you! I pulled this together based on exactly what you told me — not a generic list.</div></div>
+        <div class="eyebrow">Great talking with you</div>
+        <div class="headline">Based on our conversation, here's what fits.</div>
+        <div class="rec-card">
+          <div class="rname">Cosmetology — Evening Track</div>
+          <div class="rreason">You mentioned wanting hands-on training and needing evening hours around your day job — this program fits both.</div>
+        </div>
+        <div class="stat-badges">
+          <div class="stat-badge"><b>3x/wk</b><span>evening classes</span></div>
+          <div class="stat-badge"><b>14mo</b><span>this track</span></div>
+          <div class="stat-badge"><b>6pm</b><span>start time</span></div>
+        </div>
+        <div class="subtext">Jasmine's already flagged this as your best fit. Starting your application locks in this recommendation.</div>
+
+        <div class="more-title">Students on this track</div>
+        <div class="slider" id="fitSlider" onscroll="onSliderScroll(this,'fitDots')">
+          <div class="t-card"><div class="tquote">"The evening track meant I could keep my day job while I trained. Jasmine helped me figure out the schedule before I even applied."</div><div class="tby"><div class="tavatar"></div><div><div class="tname">Marcus T.</div><div class="trole">Cosmetology, Class of 2026</div></div></div></div>
+          <div class="t-card"><div class="tquote">"Three nights a week felt manageable even with a full-time job. The clinic floor hours count the same either way."</div><div class="tby"><div class="tavatar"></div><div><div class="tname">Dana K.</div><div class="trole">Cosmetology, Class of 2027</div></div></div></div>
+        </div>
+        <div class="dots" id="fitDots"><span class="dot active"></span><span class="dot"></span></div>
+
+        <div class="more-title">Where evening classes happen</div>
+        <div class="gallery">
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">Evening lab</div></div>
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">Study lounge</div></div>
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">Clinic floor, 6pm</div></div>
+        </div>
+
+        <div class="more-title">Questions</div>
+        ${accordion('accOther','What other programs are available?','Esthetics and Nail Tech are also offered on the evening track, if you want to compare before deciding.')}
+        ${accordion('accAid','What about financial aid?','FAFSA grants plus industry scholarships — average aid package covers close to a third of tuition.')}
+      </div>`,
+
+    applying: ()=>`
+      <div class="stage-screen">
+        <div class="assistant-note"><div class="anavatar">J</div><div class="atext">Let's get you enrolled. I'll keep this quick — just three things, and I'll take it from here.</div></div>
+        <div class="eyebrow">Your application</div>
+        <div class="headline">Let's get your application started.</div>
+
+        <div class="more-title">What happens after you submit</div>
+        <div class="steps-row">
+          <div class="step-item current"><div class="step-dot">1</div><div class="step-label">Submit</div></div>
+          <div class="step-item"><div class="step-line"></div><div class="step-dot">2</div><div class="step-label">Review<br>(2-3 days)</div></div>
+          <div class="step-item"><div class="step-line"></div><div class="step-dot">3</div><div class="step-label">Documents</div></div>
+          <div class="step-item"><div class="step-line"></div><div class="step-dot">4</div><div class="step-label">Enrolled</div></div>
+        </div>
+
+        <div class="quote-mini">
+          <div class="qavatar"></div>
+          <div class="qtext">"This part took ten minutes, honestly. Jasmine had already told me what I'd need."<b>Priya S. · Esthetics, Class of 2025</b></div>
+        </div>
+
+        <div class="assist-note">I've pre-filled what we already know from your conversation with Jasmine.</div>
+        <div class="field"><label>Full name</label><input type="text" id="fName" value="Jordan Ellis" oninput="checkForm()"></div>
+        <div class="field"><label>Email</label><input type="email" id="fEmail" value="jordan.ellis@email.com" oninput="checkForm()"></div>
+        <div class="field"><label>Preferred start date</label>
+          <select id="fStart" onchange="checkForm()">
+            <option value="">Select a date</option>
+            <option>September 21st</option>
+            <option>January 12th</option>
+          </select>
+        </div>
+        <div class="more-title">Questions</div>
+        ${accordion('accDocs','What documents will I need?','A photo ID and your signed enrollment agreement — you will upload these after submitting.')}
+        ${accordion('accFaq','How long does review take?','Applications are reviewed on a rolling basis, usually within 2-3 business days.')}
+      </div>`,
+
+    submitted: ()=>`
+      <div class="stage-screen">
+        <div class="assistant-note"><div class="anavatar">J</div><div class="atext">Almost there — I'll let you know the moment anything changes on your end, even before you ask.</div></div>
+        <div class="eyebrow">Application received</div>
+        <div class="headline">We've got it, ${state.studentName || 'Jordan'}.</div>
+
+        <div class="more-title">Where you are right now</div>
+        <div class="steps-row">
+          <div class="step-item done"><div class="step-dot">✓</div><div class="step-label">Received</div></div>
+          <div class="step-item current"><div class="step-line"></div><div class="step-dot">2</div><div class="step-label">Under review</div></div>
+          <div class="step-item"><div class="step-line"></div><div class="step-dot">3</div><div class="step-label">Decision</div></div>
+        </div>
+
+        <div class="quote-mini">
+          <div class="qavatar"></div>
+          <div class="qtext">"The wait felt long until I got a text saying my documents were confirmed. Small update, big relief."<b>Dana K. · Cosmetology, Class of 2027</b></div>
+        </div>
+
+        <div class="subtext">One more thing before you're fully enrolled — upload at least one document below.</div>
+        <div class="upload-zone"><div class="uicon">&#8593;</div><div class="utext">Tap to upload a document</div>
+          <input type="file" id="fileInput" onchange="uploadDoc()"></div>
+        <div id="docList"></div>
+
+        <div class="more-title">A look at orientation</div>
+        <div class="gallery">
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">Welcome day</div></div>
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">Meet your cohort</div></div>
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">Kit handoff</div></div>
+        </div>
+
+        <div class="more-title">Questions</div>
+        ${accordion('accReview','What happens during review?','Admissions checks your documents and confirms your seat — usually within 2 business days of your last upload.')}
+        ${accordion('accAidStatus','What is my financial aid status?','Your FAFSA is linked and pending — no action needed on your end right now.')}
+      </div>`,
+
+    enrolled: ()=>`
+      <div class="stage-screen">
+        <div class="assistant-note"><div class="anavatar">J</div><div class="atext">This is my favorite part. Welcome in — I'll see you at orientation.</div></div>
+        <div class="celebrate-card">
+          <div class="ctitle">You're enrolled!</div>
+          <div class="subtext" style="margin-bottom:0;">Orientation is September 15th. Jasmine will be there to introduce you to your cohort.</div>
+        </div>
+
+        <div class="more-title">Your first week</div>
+        <div class="steps-row">
+          <div class="step-item done"><div class="step-dot">1</div><div class="step-label">Orientation<br>day 1</div></div>
+          <div class="step-item done"><div class="step-line"></div><div class="step-dot">2</div><div class="step-label">Meet your<br>cohort</div></div>
+          <div class="step-item current"><div class="step-line"></div><div class="step-dot">3</div><div class="step-label">First clinic<br>floor day</div></div>
+        </div>
+
+        <div class="more-title">What week one looks like</div>
+        <div class="gallery">
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">Orientation</div></div>
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">Your station</div></div>
+          <div class="g-item"><div class="g-photo"></div><div class="g-label">First lab</div></div>
+        </div>
+
+        <div class="quote-mini">
+          <div class="qavatar"></div>
+          <div class="qtext">"Week one is a blur, in a good way. By Friday it already felt like my station."<b>Renee M. · Cosmetology, Class of 2027</b></div>
+        </div>
+
+        <div class="more-title">Questions</div>
+        ${accordion('accKit','What is in my student kit?','Your student kit ships two weeks before orientation — everything you need for the first month.')}
+      </div>`,
+
+    onboarding: ()=>`
+      <div class="stage-screen">
+        <div class="assistant-note"><div class="anavatar">J</div><div class="atext">One last thing before I let you go — I want to make sure you actually show up on day one.</div></div>
+        <div class="eyebrow">Almost there</div>
+        <div class="headline">Confirm you're coming to orientation.</div>
+        <div class="subtext">A quick confirmation helps us hold your spot in the right group — takes five seconds.</div>
+
+        <div class="rec-card">
+          <div class="rname">September 15th, 9:00 AM</div>
+          <div class="rreason">Bridgeview campus, Main Hall — bring a photo ID.</div>
+        </div>
+
+        <div class="more-title">What to expect</div>
+        <div class="steps-row">
+          <div class="step-item current"><div class="step-dot">1</div><div class="step-label">Confirm<br>attendance</div></div>
+          <div class="step-item"><div class="step-line"></div><div class="step-dot">2</div><div class="step-label">Orientation<br>day</div></div>
+          <div class="step-item"><div class="step-line"></div><div class="step-dot">3</div><div class="step-label">First clinic<br>floor day</div></div>
+        </div>
+
+        <div class="quote-mini">
+          <div class="qavatar"></div>
+          <div class="qtext">"I almost let orientation slip my mind with work — the reminder texts actually helped."<b>Marcus T. · Cosmetology, Class of 2026</b></div>
+        </div>
+      </div>`
+  };
+
+  function toIdx(stage){ return STAGES.indexOf(stage); }
+
+  // ---------- Home tab: the front-desk dashboard ----------
+  const COUNSELLOR_CAPTIONS = {
+    anonymous: "Hi, I'm Jasmine. Look around, and I'll be ready when you are.",
+    interested: "Next step: let's find 15 minutes to talk. Pick a time below.",
+    interview: "Next step: start your application. I'll walk you through it.",
+    applying: "Next step: three quick fields and I'll take it from here.",
+    submitted: "Next step: just one document from you. I'll flag anything else.",
+    enrolled: "Next step: confirm you're coming, and you're all set.",
+    onboarding: "One last thing. Confirm you're coming, and I'll see you there."
+  };
+
+  const STAGE_BLOCKS = {
+    anonymous: ()=>`<div class="sb-title">Pick a program to explore</div>
+      <div class="program-grid">
+        <div class="program-card" onclick="paintOutput('cosmetology')"><div class="pc-name">Cosmetology</div><div class="pc-blurb">Hair, color, styling</div></div>
+        <div class="program-card" onclick="paintOutput('esthetics')"><div class="pc-name">Esthetics</div><div class="pc-blurb">Skincare, facials</div></div>
+        <div class="program-card" onclick="paintOutput('barber')"><div class="pc-name">Barber</div><div class="pc-blurb">Classic & modern cuts</div></div>
+        <div class="program-card" onclick="paintOutput('nailtech')"><div class="pc-name">Nail Tech</div><div class="pc-blurb">Nail art & care</div></div>
+      </div>`,
+    interested: ()=>`<div class="sb-title">Pick a time to talk</div>
+      <div class="slot-row" id="slotRow">
+        <div class="slot-chip" onclick="pickSlot(this,'Today, 4:00 PM')">Today, 4:00 PM</div>
+        <div class="slot-chip" onclick="pickSlot(this,'Tomorrow, 10:00 AM')">Tomorrow, 10:00 AM</div>
+      </div>
+      <div class="confirm-note" id="slotConfirm"></div>`,
+    interview: ()=>`<div class="sb-title">Cosmetology — Evening Track</div>
+      <div class="sb-body">You mentioned wanting hands-on training and evening hours — this fits both.</div>`,
+    applying: ()=>`<div class="sb-title">Your application</div>
+      <div class="field"><label>Full name</label><input type="text" id="fName" value="Jordan Ellis" oninput="checkForm()"></div>
+      <div class="field"><label>Email</label><input type="email" id="fEmail" value="jordan.ellis@email.com" oninput="checkForm()"></div>
+      <div class="field"><label>Preferred start date</label>
+        <select id="fStart" onchange="checkForm()"><option value="">Select a date</option><option>September 21st</option><option>January 12th</option></select>
+      </div>`,
+    submitted: ()=>`<div class="sb-title">One document to go</div>
+      <div class="upload-zone"><div class="uicon">&#8593;</div><div class="utext">Tap to upload a document</div>
+        <input type="file" id="fileInput" onchange="uploadDoc()"></div>
+      <div id="docList"></div>`,
+    enrolled: ()=>`<div class="event-card" style="background:var(--card);border:1px solid var(--line);">
+      <div class="event-when">You're enrolled, ${state.studentName || 'Jordan'}!</div>
+      <div class="event-title">Orientation Day</div>
+      <div class="event-where">September 15th · Bridgeview campus</div>
+    </div>`,
+    onboarding: ()=>`<div class="event-card" style="background:var(--card);border:1px solid var(--line);">
+      <div class="event-when">September 15th, 9:00 AM</div>
+      <div class="event-title">Orientation</div>
+      <div class="event-where">Bridgeview campus, Main Hall — bring a photo ID</div>
+    </div>`
+  };
+
+  const TEASERS_BY_STAGE = {
+    anonymous: [{l:'Hear from a student', k:'testimonial'}, {l:'See recent posts', k:'social'}, {l:'Join our community', k:'community'}],
+    interested: [{l:'Hear from a student', k:'testimonial'}, {l:'Visit in person', k:'btl_session'}, {l:'Tuition & fees', k:'fees'}, {l:'Career placement', k:'placements'}],
+    interview: [{l:'Visit in person', k:'btl_session'}, {l:'Watch a live demo', k:'live_experiment'}, {l:'Financial aid', k:'aid'}],
+    applying: [{l:'Documents I will need', k:'documents'}, {l:'Hear from a student', k:'testimonial'}, {l:'Watch a live demo', k:'live_experiment'}],
+    submitted: [{l:'What happens next', k:'review'}, {l:'Join our community', k:'community'}, {l:'Hear from a student', k:'testimonial'}],
+    enrolled: [{l:'Join our community', k:'community'}, {l:'Watch a live demo', k:'live_experiment'}, {l:'Meet your instructor', k:'instructor'}],
+    onboarding: [{l:'What to bring', k:'orientation_info'}, {l:'Join our community', k:'community'}, {l:'Hear from a student', k:'testimonial'}]
+  };
+
+  const TESTIMONIALS_BY_STAGE = {
+    anonymous: {quote:"I almost second-guessed switching careers into beauty. Two years later I run my own book of clients.", name:'Renee M.', role:"Cosmetology, Class of 2027"},
+    interested: {quote:"The evening track meant I could keep my day job while I trained. Jasmine helped me figure out the schedule before I even applied.", name:'Marcus T.', role:"Cosmetology, Class of 2026"},
+    applying: {quote:"This part took ten minutes, honestly. Jasmine had already told me what I would need.", name:'Priya S.', role:"Esthetics, Class of 2025"},
+    submitted: {quote:"The wait felt long until I got a text saying my documents were confirmed. Small update, big relief.", name:'Dana K.', role:"Cosmetology, Class of 2027"},
+    onboarding: {quote:"I almost let orientation slip my mind with work. The reminder texts actually helped.", name:'Marcus T.', role:"Cosmetology, Class of 2026"}
+  };
+
+  const OUTPUT_KB = {
+    fees: {type:'info', eyebrow:'Tuition & payment', title:'Here is the honest breakdown', body:'Tuition runs about $19,500 for the full program. FAFSA-eligible, with monthly payment plans available.'},
+    schedule: {type:'info', eyebrow:'Class schedule', title:'Built around your life', body:'Day and evening tracks are both available, so you can build a schedule around work or family.'},
+    placements: {type:'info', eyebrow:'Career placement', title:'Where our grads land', body:'91% of grads are placed within 6 months, mostly across salons and spas in IL, IN and WI.'},
+    licensing: {type:'info', eyebrow:'State licensing', title:'What licensing looks like', body:'You will sit for the state cosmetology board exam after graduating.'},
+    aid: {type:'info', eyebrow:'Financial aid', title:'What is available', body:'FAFSA grants plus industry scholarships are available. Jasmine can check exactly what you qualify for.'},
+    instructor: {type:'info', eyebrow:'Meet your instructor', title:'Renee Alvarez', body:'Lead Cosmetology Instructor, 14 years in the industry. She personally supervises every student first guest on the clinic floor.'},
+    campus: {type:'info', eyebrow:'Campus life', title:'See where you will train', body:'Clinic floor, color lab, and graduation day, all at the Bridgeview campus.'},
+    documents: {type:'info', eyebrow:'Documents', title:'What you will need', body:'A photo ID and your signed enrollment agreement.'},
+    review: {type:'info', eyebrow:'Review process', title:'What happens next', body:'Admissions checks your documents and confirms your seat, usually within 2 business days.'},
+    orientation_info: {type:'info', eyebrow:'Orientation', title:'What to bring', body:'Just a photo ID. Everything else is provided on day one.'},
+    cosmetology: {type:'info', eyebrow:'Program', title:'Cosmetology', body:'Hair color, cutting, and styling — 1,500 hours, day or evening tracks available.'},
+    esthetics: {type:'info', eyebrow:'Program', title:'Esthetics', body:'Skincare, facials, and spa treatments — flexible scheduling for working students.'},
+    barber: {type:'info', eyebrow:'Program', title:'Barber', body:'Classic and modern cuts, shaves, and grooming — hands-on from week one.'},
+    nailtech: {type:'info', eyebrow:'Program', title:'Nail Tech', body:'Manicures, pedicures, and nail art techniques — the fastest path to licensing.'},
+    testimonial: {type:'testimonial'},
+    btl_session: {type:'event', when:'This Saturday, 11:00 AM', title:'Open House at Bridgeview', where:'Bridgeview campus, Main Hall', body:'Meet faculty, tour the clinic floor, and talk to current students in person. No commitment, just come see it.'},
+    live_experiment: {type:'video', label:'Live color-mixing demo', caption:'Streamed Thursdays at 6 PM from the color lab. Ask questions in real time in the chat.'},
+    community: {type:'community', count:'340+', body:'Future Tricoci students trading questions, nerves, and real answers before day one.'},
+    social: {type:'social', handle:'@tricociuniversity', caption:'Graduation day hits different when you remember your first shaky haircut.', meta:'412 likes · posted 2 days ago'}
+  };
+
+  const DEFAULT_OUTPUT_BY_STAGE = {
+    anonymous: 'testimonial',
+    interested: 'testimonial',
+    interview: 'btl_session',
+    applying: 'testimonial',
+    submitted: 'community',
+    enrolled: 'community',
+    onboarding: 'testimonial'
+  };
+
+  function renderHomeHTML(){
+    const stage = currentStage();
+    return `
+      <div class="stage-screen">
+        <div class="counsellor-block">
+          <div class="cb-head">
+            <div class="cb-avatar">J</div>
+            <div><div class="cb-name">Jasmine Cole</div><div class="cb-role">Your admissions counsellor</div></div>
+          </div>
+          <div class="cb-video" onclick="playVideo(this)">
+            <div class="playbtn"></div>
+            <div class="cb-caption">${COUNSELLOR_CAPTIONS[stage]}</div>
+          </div>
+          <button class="cb-voice-btn" onclick="simulateVoiceCall()">Talk to Jasmine now (voice)</button>
+        </div>
+
+        <div class="stage-block">${STAGE_BLOCKS[stage]()}</div>
+
+        <div class="home-cta-block">
+          <button class="action-btn" id="actionBtnHome">Book my interview</button>
+          <div class="action-sub" id="actionSubHome"></div>
+        </div>
+
+        <div class="more-title">Tap to learn more</div>
+        <div class="teaser-row" id="teaserRow"></div>
+
+        <div class="output-block" id="outputBlock"></div>
+
+        <div class="more-title">Recent updates</div>
+        ${state.crmFeed.length ? state.crmFeed.slice().reverse().map(f=>
+          `<div class="feed-item"><div class="ficon">↻</div><div><div class="ftext">${f.text}</div><div class="ftime">${f.time}</div></div></div>`
+        ).join('') : '<div class="feed-empty">Nothing new yet — I will let you know the moment something changes.</div>'}
+      </div>`;
+  }
+
+  function renderPopupChat(){
+    const box = document.getElementById('popupMsgs');
+    if(!box) return;
+    const recent = state.chatHistory.slice(-5);
+    box.innerHTML = recent.length
+      ? recent.map(m=>`<div class="mc-msg ${m.role}">${m.text}</div>`).join('')
+      : '<div class="mc-msg bot">Ask me anything — day or night.</div>';
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function renderTeasers(){
+    const row = document.getElementById('teaserRow');
+    if(!row) return;
+    row.innerHTML = '';
+    (TEASERS_BY_STAGE[currentStage()] || []).forEach(t=>{
+      const btn = document.createElement('button');
+      btn.className = 'teaser-chip' + (state.seenTeasers && state.seenTeasers.has(t.k) ? ' seen' : '');
+      btn.textContent = t.l;
+      btn.onclick = ()=>{
+        if(!state.seenTeasers) state.seenTeasers = new Set();
+        state.seenTeasers.add(t.k);
+        paintOutput(t.k);
+        renderTeasers();
+      };
+      row.appendChild(btn);
+    });
+  }
+
+  function paintOutput(key){
+    state.lastOutputKey = key;
+    if(state.activeTab === 'home') renderOutputBlock();
+  }
+
+  function renderOutputBlock(){
+    const el = document.getElementById('outputBlock');
+    if(!el) return;
+    const k = state.lastOutputKey;
+    const d = OUTPUT_KB[k];
+    if(!d){
+      el.innerHTML = '<div class="output-empty">Tap a topic above, ask below, or try the voice button — the answer shows up right here.</div>';
+      return;
+    }
+    if(d.type === 'testimonial'){
+      const t = TESTIMONIALS_BY_STAGE[currentStage()] || TESTIMONIALS_BY_STAGE.anonymous;
+      el.innerHTML = `<div class="output-eyebrow">What students say</div>
+        <div class="t-card" style="border:none;padding:0;box-shadow:none;">
+          <div class="tquote">"${t.quote}"</div>
+          <div class="tby"><div class="tavatar"></div><div><div class="tname">${t.name}</div><div class="trole">${t.role}</div></div></div>
+        </div>`;
+    } else if(d.type === 'event'){
+      el.innerHTML = `<div class="output-eyebrow">In-person session</div>
+        <div class="event-card">
+          <div class="event-when">${d.when}</div>
+          <div class="event-title">${d.title}</div>
+          <div class="event-where">${d.where}</div>
+          <div class="event-body">${d.body}</div>
+          <button class="event-rsvp${state.rsvpDone ? ' done' : ''}" onclick="rsvpEvent(this)">${state.rsvpDone ? 'You are on the list \u2713' : "I'll be there"}</button>
+        </div>`;
+    } else if(d.type === 'video'){
+      el.innerHTML = `<div class="output-eyebrow">Live experience</div>
+        <div class="cb-video" style="aspect-ratio:16/9;margin-bottom:8px;" onclick="playVideo(this)">
+          <div class="playbtn"></div>
+          <div class="cb-caption">${d.label}</div>
+        </div>
+        <div class="output-body">${d.caption}</div>`;
+    } else if(d.type === 'community'){
+      el.innerHTML = `<div class="output-eyebrow">Institute community</div>
+        <div class="community-row">
+          <div class="community-avatars"><span></span><span></span><span></span></div>
+          <div class="community-count">${d.count} members</div>
+        </div>
+        <div class="output-body" style="margin-bottom:10px;">${d.body}</div>
+        <button class="event-rsvp${state.communityJoined ? ' done' : ''}" onclick="joinCommunity(this)">${state.communityJoined ? 'You are in \u2713' : 'Join the community'}</button>`;
+    } else if(d.type === 'social'){
+      el.innerHTML = `<div class="output-eyebrow">From the community</div>
+        <div class="social-card">
+          <div class="social-head"><div class="shandle">${d.handle}</div><div class="ssource">pulled from Instagram</div></div>
+          <div class="social-photo"></div>
+          <div class="social-caption">"${d.caption}" — ${d.meta}</div>
+        </div>`;
+    } else {
+      el.innerHTML = `<div class="output-eyebrow">${d.eyebrow}</div><div class="output-title">${d.title}</div><div class="output-body">${d.body}</div>`;
+    }
+  }
+
+  function rsvpEvent(btn){
+    state.rsvpDone = true;
+    btn.textContent = 'You are on the list \u2713';
+    btn.classList.add('done');
+    crmPush('RSVP confirmed for Saturday Open House.');
+  }
+
+  function joinCommunity(btn){
+    state.communityJoined = true;
+    btn.textContent = 'You are in \u2713';
+    btn.classList.add('done');
+  }
+
+  function simulateVoiceCall(){
+    const el = document.getElementById('outputBlock');
+    if(el) el.innerHTML = '<div class="output-empty">Connecting your call…</div>';
+    setTimeout(()=>{
+      const el2 = document.getElementById('outputBlock');
+      if(!el2) return;
+      const nextStep = document.querySelector('.action-btn') ? document.querySelector('.action-btn').textContent : 'your next step';
+      el2.innerHTML = `<div class="output-eyebrow">Voice call summary</div><div class="output-title">Just spoke with Jasmine</div><div class="output-body">She confirmed your next step: ${nextStep}. A recap was also sent to your email.</div>`;
+    }, 1500);
+  }
+
+  function quickCallHandoff(){
+    switchTab('messages');
+    setTimeout(()=> document.getElementById('callHandoff').click(), 150);
+  }
+
+  // ---------- Resources tab: browsable anytime, not stage-locked ----------
+  const RESOURCES = [
+    {title:'Tuition & payment plans', body:'Tuition runs about $19,500 for the full program. FAFSA-eligible, with monthly payment plans available.'},
+    {title:'Class schedule options', body:'Day and evening tracks are both available, so you can build a schedule around work or family.'},
+    {title:'Career placement', body:'91% of grads are placed within 6 months, mostly across salons and spas in IL, IN & WI.'},
+    {title:'Financial aid & scholarships', body:'FAFSA grants plus industry scholarships are both available — Jasmine can check what you specifically qualify for.'},
+    {title:'State licensing', body:'You will sit for the state cosmetology board exam after graduating — the curriculum is built around it.'},
+    {title:'Campus locations', body:'15 campuses across Illinois, Indiana, and Wisconsin — Bridgeview is the flagship location.'}
+  ];
+
+  function renderResourcesHTML(){
+    return `
+      <div class="stage-screen">
+        <div class="headline">Browse anytime.</div>
+        <div class="subtext">Nothing here is locked to a stage — look around whenever you have a question.</div>
+        <div class="res-grid">
+          ${RESOURCES.map((r,i)=>`
+            <div class="res-card">
+              ${accordion('res'+i, r.title, r.body)}
+            </div>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  // ---------- Messages tab: persistent chat, history survives tab switches ----------
+  function renderMessagesHTML(){
+    return `
+      <div class="messages-tab">
+        <div class="chat-head">
+          <div class="chead-info">
+            <div class="chavatar">J</div>
+            <div><div class="cname">Jasmine Cole</div><div class="cstatus">● Online now — real-time or hand off to a human</div></div>
+          </div>
+          <span class="cp-call" id="messagesCallBtn" title="Talk to a real person">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 10.8C8.1 13.7 10.3 15.9 13.2 17.4L15.4 15.2C15.7 14.9 16.1 14.8 16.5 14.9C17.7 15.3 19 15.5 20.3 15.5C20.9 15.5 21.4 16 21.4 16.6V20.3C21.4 20.9 20.9 21.4 20.3 21.4C10.8 21.4 3 13.6 3 4.1C3 3.5 3.5 3 4.1 3H7.8C8.4 3 8.9 3.5 8.9 4.1C8.9 5.4 9.1 6.7 9.5 7.9C9.6 8.3 9.5 8.7 9.2 9L6.6 10.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+        <div class="chat-msgs" id="chatMsgs"></div>
+        <div class="chat-quick" id="chatQuick"></div>
+        <div class="callbar"><button class="callbtn" id="callHandoff">Talk to a real person now</button></div>
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Ask anything…">
+          <button id="chatSend">Send</button>
+        </div>
+      </div>`;
+  }
+
+  function wireMessagesTab(){
+    renderChatHistory();
+    if(state.chatHistory.length === 0){
+      pushChat('bot', `Hi ${state.studentName || 'there'} — I'm Jasmine. Ask me anything, any time — day or night.`);
+    }
+    renderChatChips();
+    document.getElementById('chatSend').addEventListener('click', ()=>{
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if(!text) return;
+      input.value = '';
+      sendChat(text);
+    });
+    document.getElementById('chatInput').addEventListener('keydown', e=>{
+      if(e.key === 'Enter') document.getElementById('chatSend').click();
+    });
+    document.getElementById('callHandoff').addEventListener('click', triggerHandoff);
+    document.getElementById('messagesCallBtn').addEventListener('click', triggerHandoff);
+    document.getElementById('msgDot').style.display = 'none';
+    state.unreadMessages = false;
+  }
+
+  function triggerHandoff(){
+    pushChatRaw('handoff', 'Connecting you to a real admissions advisor — average wait under 2 minutes.');
+  }
+
+  function renderChatHistory(){
+    const box = document.getElementById('chatMsgs');
+    if(!box) return;
+    box.innerHTML = '';
+    state.chatHistory.forEach(m=>{
+      const div = document.createElement('div');
+      div.className = 'cmsg ' + m.role;
+      div.textContent = m.text;
+      box.appendChild(div);
+    });
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function pushChatRaw(role, text){
+    state.chatHistory.push({role, text});
+    if(document.getElementById('chatMsgs')) renderChatHistory();
+    if(document.getElementById('popupMsgs')) renderPopupChat();
+    const popupOpen = document.getElementById('chatPopup') && document.getElementById('chatPopup').classList.contains('open');
+    if(!popupOpen && state.activeTab !== 'messages'){
+      const dot = document.getElementById('fabDot');
+      if(dot) dot.classList.add('show');
+    }
+    if(state.activeTab === 'resources'){
+      const dot = document.getElementById('msgDot');
+      if(dot) dot.style.display = 'block';
+      state.unreadMessages = true;
+    }
+  }
+
+  function pushChat(role, text){ pushChatRaw(role, text); }
+
+  // ---------- Tab dispatch ----------
+  function switchTab(tab){
+    state.activeTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b=> b.classList.toggle('active', b.dataset.tab === tab));
+    renderMainView();
+  }
+
+  function renderMainView(){
+    const view = document.getElementById('mainView');
+    if(state.activeTab === 'home'){
+      view.innerHTML = renderHomeHTML();
+      renderTeasers();
+      renderOutputBlock();
+    } else if(state.activeTab === 'resources'){
+      view.innerHTML = renderResourcesHTML();
+    }
+    updateActionBar();
+    view.scrollTop = 0;
+  }
+
+  function renderProgress(targetId){
+    const row = document.getElementById(targetId || 'progressRow');
+    if(!row) return;
+    row.innerHTML = '';
+    STAGES.forEach((s,i)=>{
+      const seg = document.createElement('div');
+      seg.className = 'progress-seg' + (i < state.stageIndex ? ' done' : i === state.stageIndex ? ' current' : '');
+      seg.innerHTML = '<div class="fill"></div>';
+      row.appendChild(seg);
+    });
+  }
+
+  function crmPush(text, effect){
+    const banner = document.getElementById('crmBanner');
+    document.getElementById('crmBannerText').textContent = text;
+    banner.classList.add('show');
+    setTimeout(()=> banner.classList.remove('show'), 4200);
+    state.crmFeed.push({text, time: 'Just now'});
+    if(effect) effect();
+  }
+
+  function maybeTriggerCrmPush(){
+    if(currentStage() === 'submitted' && !state.crmDocPushed){
+      state.crmDocPushed = true;
+      setTimeout(()=>{
+        crmPush('Admissions verified your Photo ID on file from your interview — no upload needed for that one.', ()=>{
+          state.docsUploaded = Math.max(state.docsUploaded, 1);
+          renderDocList();
+          updateActionBar();
+        });
+      }, 3200);
+    }
+    if(currentStage() === 'onboarding' && !state.meltNudgeSent){
+      setTimeout(()=>{
+        if(!state.orientationConfirmed){
+          state.meltNudgeSent = true;
+          crmPush('We noticed you have not confirmed orientation yet — everything okay?', ()=>{
+            pushChatRaw('bot', "Hey — just checking in. I noticed you haven't confirmed orientation yet. Anything I can help with, or ready to lock it in?");
+          });
+        }
+      }, 5000);
+    }
+  }
+
+  const CALL_ICON_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 10.8C8.1 13.7 10.3 15.9 13.2 17.4L15.4 15.2C15.7 14.9 16.1 14.8 16.5 14.9C17.7 15.3 19 15.5 20.3 15.5C20.9 15.5 21.4 16 21.4 16.6V20.3C21.4 20.9 20.9 21.4 20.3 21.4C10.8 21.4 3 13.6 3 4.1C3 3.5 3.5 3 4.1 3H7.8C8.4 3 8.9 3.5 8.9 4.1C8.9 5.4 9.1 6.7 9.5 7.9C9.6 8.3 9.5 8.7 9.2 9L6.6 10.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>';
+
+  function updateActionBar(){
+    const stage = currentStage();
+    let navLabel, fullLabel, disabled, sub;
+    if(stage === 'anonymous'){
+      navLabel = 'Start'; fullLabel = 'Get started'; disabled = false; sub = '';
+    } else if(stage === 'interested'){
+      navLabel = 'Book'; fullLabel = 'Book my interview'; disabled = !state.slotBooked;
+      sub = state.slotBooked ? '' : 'Pick a time to continue';
+    } else if(stage === 'interview'){
+      navLabel = 'Apply'; fullLabel = 'Start my application'; disabled = false; sub = '';
+    } else if(stage === 'applying'){
+      navLabel = 'Submit'; fullLabel = 'Submit application'; disabled = !state.formValid;
+      sub = state.formValid ? '' : 'Fill in every field';
+    } else if(stage === 'submitted'){
+      navLabel = 'Continue'; fullLabel = 'Continue'; disabled = state.docsUploaded < 1;
+      sub = state.docsUploaded < 1 ? 'Upload a document first' : '';
+    } else if(stage === 'enrolled'){
+      navLabel = state.calendarAdded ? 'Added \u2713' : 'Calendar';
+      fullLabel = state.calendarAdded ? 'Added to calendar \u2713' : 'Add to my calendar';
+      disabled = state.calendarAdded; sub = '';
+    } else if(stage === 'onboarding'){
+      navLabel = state.orientationConfirmed ? 'Confirmed \u2713' : 'Confirm';
+      fullLabel = state.orientationConfirmed ? 'Confirmed \u2713' : 'Confirm attendance';
+      disabled = state.orientationConfirmed;
+      sub = state.orientationConfirmed ? 'See you Sept 15th!' : '';
+    }
+    const navBtn = document.getElementById('actionBtn');
+    const navLabelEl = document.getElementById('actionLabel');
+    if(navBtn){ navBtn.disabled = disabled; }
+    if(navLabelEl){ navLabelEl.textContent = navLabel; }
+
+    document.querySelectorAll('.action-btn').forEach(b=>{ b.textContent = fullLabel; b.disabled = disabled; });
+    document.querySelectorAll('.action-sub').forEach(s=>{ s.textContent = sub; });
+    maybeTriggerCrmPush();
+  }
+
+  function pickSlot(el, label){
+    document.querySelectorAll('#slotRow .slot-chip').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
+    state.slotBooked = label;
+    const confirm = document.getElementById('slotConfirm');
+    confirm.textContent = `Booked: ${label} with Jasmine`;
+    confirm.classList.add('show');
+    updateActionBar();
+  }
+
+  function checkForm(){
+    const name = document.getElementById('fName').value.trim();
+    const email = document.getElementById('fEmail').value.trim();
+    const start = document.getElementById('fStart').value;
+    state.formValid = !!(name && email.includes('@') && start);
+    state.studentName = name.split(' ')[0];
+    updateActionBar();
+  }
+
+  function uploadDoc(){
+    state.docsUploaded++;
+    renderDocList();
+    updateActionBar();
+  }
+
+  function renderDocList(){
+    const el = document.getElementById('docList');
+    if(!el) return;
+    const docs = ['Photo ID','Enrollment agreement'];
+    el.innerHTML = docs.map((d,i)=>`<div class="doc-row${i < state.docsUploaded ? ' received' : ''}"><div class="doc-dot"></div><div>${d}</div></div>`).join('');
+  }
+
+  function playVideo(card){
+    card.querySelector('.vcaption span').textContent = 'Playing (placeholder) — swap in a real clip';
+  }
+
+  function onSliderScroll(el, dotsId){
+    const idx = Math.round(el.scrollLeft / (el.firstElementChild.offsetWidth + 10));
+    document.querySelectorAll('#'+dotsId+' .dot').forEach((d,i)=>d.classList.toggle('active', i===idx));
+  }
+
+  // ---------- persistent chat: real-time query resolution + human handoff ----------
+  const CHAT_KB = {
+    fees: "Tuition runs about $19,500 for the full program. FAFSA-eligible, with monthly payment plans available.",
+    schedule: "Day and evening tracks are both available, so you can build a schedule around work or family.",
+    placements: "91% of grads are placed within 6 months, mostly across salons and spas in IL, IN & WI.",
+    licensing: "You'll sit for the state cosmetology board exam after graduating — the curriculum is built around it.",
+    aid: "FAFSA grants plus industry scholarships are both available — Jasmine can check what you specifically qualify for."
+  };
+  const CHAT_CHIPS = [
+    {l:'Tuition & fees', k:'fees'}, {l:'Class schedule', k:'schedule'},
+    {l:'Job placement', k:'placements'}, {l:'Financial aid', k:'aid'}
+  ];
+
+  function detectChatIntent(text){
+    const t = text.toLowerCase();
+    if(/fee|tuition|cost|how much|pay/.test(t)) return 'fees';
+    if(/schedule|day class|evening|hours|flexib/.test(t)) return 'schedule';
+    if(/placement|placed|job|salon|career|hire/.test(t)) return 'placements';
+    if(/licens|board exam|certif/.test(t)) return 'licensing';
+    if(/aid|scholarship|fafsa|loan|grant/.test(t)) return 'aid';
+    return null;
+  }
+
+  function renderChatChips(){
+    const row = document.getElementById('chatQuick');
+    row.innerHTML = '';
+    CHAT_CHIPS.forEach(c=>{
+      const btn = document.createElement('button');
+      btn.className = 'qchip';
+      btn.textContent = c.l;
+      btn.onclick = ()=> sendChat(c.l, c.k);
+      row.appendChild(btn);
+    });
+  }
+
+  function sendChat(text, forcedIntent){
+    pushChatRaw('user', text);
+    const intent = forcedIntent || detectChatIntent(text);
+    setTimeout(()=>{
+      if(intent && CHAT_KB[intent]){
+        pushChatRaw('bot', CHAT_KB[intent]);
+        paintOutput(intent);
+      } else {
+        pushChatRaw('bot', "I'm not totally sure — try asking about tuition, schedule, job placement, or financial aid, or tap below to talk to a real person.");
+      }
+    }, 400);
+  }
+
+  document.addEventListener('click', e=>{
+    if(e.target.closest && e.target.closest('#chatFab')){
+      const popup = document.getElementById('chatPopup');
+      popup.classList.add('open');
+      document.getElementById('fabDot').classList.remove('show');
+      renderPopupChat();
+      return;
+    }
+    if(e.target.id === 'chatPopupClose'){
+      document.getElementById('chatPopup').classList.remove('open');
+      return;
+    }
+    if(e.target.closest && e.target.closest('#popupCallBtn')){
+      triggerHandoff();
+      renderPopupChat();
+      return;
+    }
+    if(e.target.id === 'popupSend'){
+      const input = document.getElementById('popupInput');
+      const text = input.value.trim();
+      if(!text) return;
+      input.value = '';
+      sendChat(text);
+      return;
+    }
+    const primaryBtn = e.target.closest('.nav-cta-btn') || (e.target.classList.contains('action-btn') ? e.target : null);
+    if(!primaryBtn || primaryBtn.disabled) return;
+    const stage = currentStage();
+    if(stage === 'enrolled'){
+      state.calendarAdded = true;
+      updateActionBar();
+      return;
+    }
+    if(stage === 'onboarding'){
+      state.orientationConfirmed = true;
+      updateActionBar();
+      crmPush('Orientation attendance confirmed — you are all set.');
+      return;
+    }
+    if(state.stageIndex < STAGES.length - 1){
+      state.stageIndex++;
+      state.lastOutputKey = DEFAULT_OUTPUT_BY_STAGE[currentStage()];
+      renderMainView();
+    }
+  });
+
+  document.addEventListener('keydown', e=>{
+    if(e.target.id === 'popupInput' && e.key === 'Enter'){
+      document.getElementById('popupSend').click();
+    }
+  });
+
+  state.lastOutputKey = DEFAULT_OUTPUT_BY_STAGE[currentStage()];
+  renderMainView();
+</script>
+
+</body>
+</html>
